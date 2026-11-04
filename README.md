@@ -139,11 +139,11 @@ This allows the same catalog search, evidence retrieval, recommendation validati
 
 ## WhatsApp and the platform
 
-The advisor runs on WhatsApp, and the video above shows a full sale there, followed by a person taking over in the chatroom.
+The advisor runs on WhatsApp, and the video above shows a full sale conversation there, followed by a person taking over in the chatroom.
 
 The WhatsApp channel and the chatroom come from an existing platform, outside this repository, which also supports Instagram and Facebook. The demo uses a test user and a test integration with Meta.
 
-The platform receives the customer's messages and calls `POST /consultas` once per turn. `src/wire` translates between the platform's contract and the advisor's own types. The platform delivers the replies and executes the effects the advisor proposes.
+The platform receives the customer's messages and calls `POST /consultas` once per customer message. `src/wire` translates between the platform's contract and the advisor's own types. The platform delivers the replies and executes the effects the advisor proposes.
 
 Photo and voice input run through `/chat`, on the public page. `/consultas` handles the text of the turn.
 
@@ -171,7 +171,7 @@ This makes the interface more accessible to customers who prefer speaking or hav
 
 ### Evaluation results
 
-The following tests were performed through `/chat` on November 3, 2026, with three runs per case unless otherwise specified.
+The following tests were performed through `/chat` on November 3, 2026, with three runs per case unless otherwise specified. Photos are Wikimedia Commons images. Voice notes are macOS text-to-speech, and the noisy one has noise added by software. Results were read by hand.
 
 | Case | Result |
 |---|---|
