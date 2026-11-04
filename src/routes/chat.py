@@ -4,19 +4,31 @@
 host for a browser: it keeps each session in memory and simulates the effects with `host_sim`, as
 the CLI does. So it runs on one instance, and a restart forgets the conversations.
 
+`/chat` answers when the turn ends. `/chat/stream` is the same turn with its steps on the way, one
+JSON per line: `step` as each one starts and ends (`world/trace.py`), then `done` with what `/chat`
+returns, or `error`. The turn runs in its own task, so a visitor who leaves does not lose it: the
+session keeps what the agent did.
+
+The cart and the form go out with each answer as the page draws them. They are read-only here: the
+agent fills them, and the cart is what the judge read this turn (`Answer.order`).
+
 It has no login, so `demo_turns` caps the paid turns per process.
 """
 
 from __future__ import annotations
 
 import asyncio
+import json
+import logging
 from collections import OrderedDict
+from collections.abc import AsyncIterator, Awaitable
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Any
 
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, StreamingResponse
 from pydantic import BaseModel, Field
 
 from catalejo.core import EffectOp, PlanOp, effects_of
@@ -24,8 +36,11 @@ from catalejo.llm import ProviderError
 from config import Settings, get_settings
 from core_agent import host_sim
 from core_agent.agent import MUSE_MODEL
+from core_agent.world import trace
+from core_agent.world.order import Item, order_dict
 from host import Advisor
-from host.agent import TurnFailed
+from host.agent import Answer, TurnFailed
+from host.form import form_to_dict
 from host.perception import Perception, message
 from routes.queries import advisor
 
@@ -35,6 +50,10 @@ SESSIONS = 200
 HISTORY = 20
 """The turns sent to the advisor, the same cap as `/queries`."""
 
+PAYMENT_LINK = "send_payment_link"
+"""The effect whose `done` turns the cart card to "Link sent"."""
+
+log = logging.getLogger(__name__)
 router = APIRouter(tags=["demo"])
 
 
@@ -44,11 +63,15 @@ class Session:
     sale: tuple[PlanOp, ...] = ()
     effects: tuple[EffectOp, ...] = ()
     form: dict[str, str] = field(default_factory=dict)
+    order: tuple[Item, ...] = ()
+    cleared: bool = False
     lock: asyncio.Lock = field(default_factory=asyncio.Lock)
 
 
 sessions: OrderedDict[str, Session] = OrderedDict()
 turns_served = 0
+running: set[asyncio.Task[None]] = set()
+"""The streamed turns in flight: the loop only keeps a weak reference to a task."""
 
 
 class ChatIn(BaseModel):
@@ -65,6 +88,8 @@ class ChatOut(BaseModel):
     seen: str
     tokens: int
     seconds: float
+    cart: dict[str, Any]
+    form: dict[str, Any]
 
 
 def perception(settings: Settings = Depends(get_settings)) -> Perception:
@@ -91,6 +116,50 @@ async def chat(
     eyes: Perception = Depends(perception),
     settings: Settings = Depends(get_settings),
 ) -> ChatOut:
+    admit(body, settings)
+    return await take_turn(body, a, eyes, settings)
+
+
+@router.post("/chat/stream")
+async def chat_stream(
+    body: ChatIn,
+    a: Advisor = Depends(advisor),
+    eyes: Perception = Depends(perception),
+    settings: Settings = Depends(get_settings),
+) -> StreamingResponse:
+    admit(body, settings)
+    loop = asyncio.get_running_loop()
+    events: asyncio.Queue[dict[str, Any] | None] = asyncio.Queue()
+
+    def put(event: dict[str, Any] | None) -> None:
+        loop.call_soon_threadsafe(events.put_nowait, event)
+
+    async def turn() -> None:
+        try:
+            with trace.watching(lambda node: put({"type": "step", "node": node})):
+                out = await take_turn(body, a, eyes, settings)
+            put({"type": "done", **out.model_dump()})
+        except HTTPException as e:
+            put({"type": "error", "status": e.status_code, "detail": e.detail})
+        except Exception:
+            log.exception("the streamed turn failed")
+            put({"type": "error", "status": 500, "detail": "the turn failed"})
+        finally:
+            put(None)
+
+    task = asyncio.create_task(turn())
+    running.add(task)
+    task.add_done_callback(running.discard)
+
+    async def lines() -> AsyncIterator[str]:
+        while (event := await events.get()) is not None:
+            yield json.dumps(event, ensure_ascii=False) + "\n"
+
+    return StreamingResponse(lines(), media_type="application/x-ndjson", headers={"Cache-Control": "no-store"})
+
+
+def admit(body: ChatIn, settings: Settings) -> None:
+    """A turn with something to read and under the cap, counted; otherwise the refusal, before anything streams."""
     global turns_served
     if not (body.text.strip() or body.image or body.audio):
         raise HTTPException(status_code=422, detail="send text, a photo or a voice note")
@@ -98,12 +167,14 @@ async def chat(
         raise HTTPException(status_code=429, detail="the demo reached its turn limit for today")
     turns_served += 1
 
+
+async def take_turn(body: ChatIn, a: Advisor, eyes: Perception, settings: Settings) -> ChatOut:
     s = session_of(body.session)
     async with s.lock:
         try:
             heard, seen = await asyncio.gather(
-                eyes.voice(body.audio) if body.audio else _nothing(),
-                eyes.photo(body.image) if body.image else _nothing(),
+                reading("voice", "Listening to the voice note", eyes.voice(body.audio)) if body.audio else _nothing(),
+                reading("photo", "Looking at the photo", eyes.photo(body.image)) if body.image else _nothing(),
             )
         except (httpx.HTTPError, ProviderError) as e:
             raise HTTPException(status_code=502, detail=f"could not read the attachment: {e}") from e
@@ -130,15 +201,44 @@ async def chat(
         s.sale = r.sale
         s.effects = (*r.effects, *host_sim(effects_of(r.effects)))
         s.form = r.form
+        keep_order(s, r)
 
-    return ChatOut(
-        messages=list(r.messages) or [r.text],
-        sources=list(r.sources),
-        heard=heard,
-        seen=seen,
-        tokens=r.tokens,
-        seconds=round(r.seconds, 1),
-    )
+        return ChatOut(
+            messages=list(r.messages) or [r.text],
+            sources=list(r.sources),
+            heard=heard,
+            seen=seen,
+            tokens=r.tokens,
+            seconds=round(r.seconds, 1),
+            cart=cart_card(s),
+            form=form_card(s),
+        )
+
+
+def keep_order(s: Session, r: Answer) -> None:
+    """The order after the turn: emptied if the customer started over, as is if the turn brought no judgment."""
+    if r.reset:
+        s.order, s.cleared = (), True
+    elif r.order is not None:
+        s.order = r.order
+        s.cleared = s.cleared and not r.order
+
+
+def cart_card(s: Session) -> dict[str, Any]:
+    linked = any(e.verb == "done" and e.id == PAYMENT_LINK for e in s.effects)
+    return {**order_dict(s.order), "status": "cleared" if s.cleared else "link_sent" if linked else "building"}
+
+
+def form_card(s: Session) -> dict[str, Any]:
+    return form_to_dict(s.form)
+
+
+async def reading(who: str, title: str, job: Awaitable[str]) -> str:
+    """A photo or a voice note being read, on the trace; the page puts what came out on the visitor's bubble."""
+    with trace.span("read", title, who=who) as step:
+        text = await job
+        step.fill(text=text)
+        return text
 
 
 async def _nothing() -> str:

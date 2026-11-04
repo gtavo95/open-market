@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
+from dataclasses import replace
 from typing import Any
 
 import httpx
@@ -11,11 +12,13 @@ import pytest
 from fastapi.testclient import TestClient
 
 from config import Settings, get_settings
+from core_agent.world import catalog
+from core_agent.world.order import Item
 from host.perception import Perception, message
 from main import app
 from routes import chat as chat_route
 from routes.chat import perception
-from tests.test_routes import GROUNDED, FakeAdvisor, built
+from tests.test_routes import EMPTY, GROUNDED, FakeAdvisor, built
 
 PHOTO = "data:image/png;base64,iVBORw0KGgo="
 
@@ -33,7 +36,8 @@ class FakeEyes:
 
 
 @pytest.fixture
-def client() -> Iterator[TestClient]:
+def client(monkeypatch: pytest.MonkeyPatch) -> Iterator[TestClient]:
+    monkeypatch.setattr(catalog, "BUNDLE", catalog.CATALOG)
     chat_route.sessions.clear()
     chat_route.turns_served = 0
     app.dependency_overrides[perception] = FakeEyes
@@ -173,3 +177,85 @@ class TestMessage:
 
     def test_a_photo_alone_is_a_turn(self) -> None:
         assert message("", "A leaf.") == "[The customer sent a photo. It shows: A leaf.]"
+
+
+def streamed(client: TestClient, **body: Any) -> list[dict[str, Any]]:
+    r = client.post("/chat/stream", json={"session": "session-1", **body})
+    assert r.status_code == 200
+    return [json.loads(line) for line in r.text.splitlines()]
+
+
+class TestStream:
+    def test_ends_with_what_chat_returns(self, client: TestClient) -> None:
+        built(client, FakeAdvisor())
+
+        events = streamed(client, text="what do you have for thrips?")
+
+        assert events[-1]["type"] == "done"
+        assert events[-1]["messages"] == ["Hyphavane, 1.0 to 1.5 l/ha"]
+        assert events[-1]["form"]["missing"]
+        assert events[-1]["cart"]["status"] == "building"
+
+    def test_a_photo_is_a_step_with_what_was_seen(self, client: TestClient) -> None:
+        built(client, FakeAdvisor())
+
+        events = streamed(client, image=PHOTO)
+
+        steps = [e["node"] for e in events if e["type"] == "step"]
+        assert [s["status"] for s in steps] == ["running", "done"]
+        assert steps[-1]["who"] == "photo"
+        assert steps[-1]["text"] == "A caterpillar on a corn leaf."
+
+    def test_an_empty_message_is_refused_before_streaming(self, client: TestClient) -> None:
+        built(client, FakeAdvisor())
+
+        assert client.post("/chat/stream", json={"session": "session-1"}).status_code == 422
+
+    def test_a_turn_with_no_answer_ends_in_an_error_event(self, client: TestClient) -> None:
+        built(client, FakeAdvisor(EMPTY))
+
+        events = streamed(client, text="hi")
+
+        assert events[-1] == {"type": "error", "status": 502, "detail": "the advisor ended without answering"}
+
+
+class TestCards:
+    def test_the_cart_is_the_order_of_the_turn(self, client: TestClient) -> None:
+        item = Item("hyphavane", "1 l", 2.0, product="Hyphavane", presentation="1 l", unit_price=100.0, currency="GTQ")
+        built(client, FakeAdvisor(replace(GROUNDED, order=(item,))))
+
+        cart = send(client, text="two liters").json()["cart"]
+
+        assert cart["total"] == 200.0
+        assert cart["items"][0]["product"] == "Hyphavane"
+
+    def test_a_turn_without_a_judgment_keeps_the_order(self, client: TestClient) -> None:
+        item = Item("hyphavane", "1 l", 2.0, product="Hyphavane", presentation="1 l", unit_price=100.0)
+        fake = FakeAdvisor(replace(GROUNDED, order=(item,)))
+        built(client, fake)
+        send(client, text="two liters")
+
+        fake.answer = GROUNDED
+
+        assert send(client, text="thanks").json()["cart"]["items"]
+
+    def test_starting_over_empties_it(self, client: TestClient) -> None:
+        item = Item("hyphavane", "1 l", 2.0, product="Hyphavane", presentation="1 l", unit_price=100.0)
+        fake = FakeAdvisor(replace(GROUNDED, order=(item,)))
+        built(client, fake)
+        send(client, text="two liters")
+
+        fake.answer = replace(GROUNDED, reset=True)
+
+        cart = send(client, text="start over").json()["cart"]
+        assert cart["items"] == []
+        assert cart["status"] == "cleared"
+
+    def test_the_form_says_what_is_missing(self, client: TestClient) -> None:
+        built(client, FakeAdvisor(replace(GROUNDED, form={"nit": "CF"})))
+
+        form = send(client, text="CF").json()["form"]
+
+        assert form["fields"] == {"nit": "CF"}
+        assert "nit" not in form["missing"]
+        assert [f["id"] for f in form["form_schema"]][:2] == ["legal_name", "nit"]

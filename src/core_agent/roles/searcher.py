@@ -55,6 +55,7 @@ from ..prompts.searcher import SCHEMA, VOICE, contract
 from ..world.catalog import PRODUCT_NOTES, VOCABULARY_NOTES, targets, products, product_types
 from ..world.fields import describe
 from ..world.facts import LOG_FACTS
+from ..world.trace import Watched
 
 SEARCH_STEPS = 8
 
@@ -231,7 +232,7 @@ def search_catalog(
                 step = drive(
                     model,
                     handle,
-                    ws,
+                    Watched(ws),
                     keep_recent=6,
                     keep_first=2,
                     max_steps=SEARCH_STEPS,

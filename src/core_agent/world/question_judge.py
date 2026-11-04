@@ -517,6 +517,10 @@ class QuestionJudge:
         """The judgment already made for that turn, if it is in memory. Does not go to the network. It is for the eval."""
         return self._done.get(key_of(question, history))
 
+    def read(self, seen: Log) -> Judgment | None:
+        """The judgment of the turn in `seen`, if it is in memory. Does not go to the network. It is for the trace."""
+        return self._done.get(customer_words(seen))
+
     def last_reply(self, question: str, history: History) -> Answered | None:
         """What was judged about that turn's answer, if it was judged. Does not go to the network. It is for `Answer.rules`."""
         return self._replies.get(key_of(question, history))

@@ -1,0 +1,1052 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-04T04:11:51+00:00",
+  "title": "Design System: Open Market",
+  "extensions": {
+    "colorMeta": {
+      "primary": {
+        "role": "primary",
+        "displayName": "Cacao",
+        "canonical": "#6e2c01",
+        "tonalRamp": [
+          "#190500",
+          "#411700",
+          "#6d2b00",
+          "#914c28",
+          "#b66d49",
+          "#dc906b",
+          "#ffb693",
+          "#feeae0"
+        ]
+      },
+      "primary-foreground": {
+        "role": "primary",
+        "displayName": "Cream On Cacao",
+        "canonical": "#ffe1b6",
+        "tonalRamp": [
+          "#120900",
+          "#342100",
+          "#553d15",
+          "#765c35",
+          "#997d55",
+          "#bca077",
+          "#e2c49a",
+          "#ffecd1"
+        ]
+      },
+      "primary-hover": {
+        "role": "primary",
+        "displayName": "Cacao Deep",
+        "canonical": "#4f1f01",
+        "tonalRamp": [
+          "#190500",
+          "#401700",
+          "#643216",
+          "#875236",
+          "#ab7356",
+          "#d09678",
+          "#f7b99b",
+          "#feeae0"
+        ]
+      },
+      "primary-text": {
+        "role": "primary",
+        "displayName": "Cacao Ink",
+        "canonical": "#6e2c01",
+        "tonalRamp": [
+          "#190500",
+          "#411700",
+          "#6d2b00",
+          "#914c28",
+          "#b66d49",
+          "#dc906b",
+          "#ffb693",
+          "#feeae0"
+        ]
+      },
+      "highlight": {
+        "role": "secondary",
+        "displayName": "Customer Cream",
+        "canonical": "#ffe1b6",
+        "tonalRamp": [
+          "#120900",
+          "#342100",
+          "#553d15",
+          "#765c35",
+          "#997d55",
+          "#bca077",
+          "#e2c49a",
+          "#ffecd1"
+        ]
+      },
+      "highlight-foreground": {
+        "role": "secondary",
+        "displayName": "Customer Ink",
+        "canonical": "#6e2c01",
+        "tonalRamp": [
+          "#190500",
+          "#411700",
+          "#6d2b00",
+          "#914c28",
+          "#b66d49",
+          "#dc906b",
+          "#ffb693",
+          "#feeae0"
+        ]
+      },
+      "background": {
+        "role": "neutral",
+        "displayName": "Paper",
+        "canonical": "#faf9f5",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262522",
+          "#43423f",
+          "#62615e",
+          "#83827f",
+          "#a6a5a1",
+          "#cac9c5",
+          "#efeeea"
+        ]
+      },
+      "foreground": {
+        "role": "neutral",
+        "displayName": "Night",
+        "canonical": "#1f1f1f",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "muted-foreground": {
+        "role": "neutral",
+        "displayName": "Bark",
+        "canonical": "#6b5d51",
+        "tonalRamp": [
+          "#130902",
+          "#2e2218",
+          "#4c3f34",
+          "#6c5e52",
+          "#8e7f73",
+          "#b1a295",
+          "#d6c6b8",
+          "#fcebdd"
+        ]
+      },
+      "receipt": {
+        "role": "neutral",
+        "displayName": "Receipt Bark",
+        "canonical": "#6b5d51",
+        "tonalRamp": [
+          "#130902",
+          "#2e2218",
+          "#4c3f34",
+          "#6c5e52",
+          "#8e7f73",
+          "#b1a295",
+          "#d6c6b8",
+          "#fcebdd"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "surface-hover": {
+        "role": "neutral",
+        "displayName": "Warm Tint",
+        "canonical": "#fff5e6",
+        "tonalRamp": [
+          "#100a02",
+          "#2b2419",
+          "#494135",
+          "#686053",
+          "#8a8174",
+          "#ada496",
+          "#d1c8b9",
+          "#f7edde"
+        ]
+      },
+      "surface-active": {
+        "role": "neutral",
+        "displayName": "Selected Cream",
+        "canonical": "#ffe1b6",
+        "tonalRamp": [
+          "#120900",
+          "#342100",
+          "#553d15",
+          "#765c35",
+          "#997d55",
+          "#bca077",
+          "#e2c49a",
+          "#ffecd1"
+        ]
+      },
+      "border": {
+        "role": "neutral",
+        "displayName": "Clay",
+        "canonical": "#e5d5c3",
+        "tonalRamp": [
+          "#130901",
+          "#2e2315",
+          "#4c3f31",
+          "#6c5f4f",
+          "#8e806f",
+          "#b1a291",
+          "#d6c6b5",
+          "#fcecd9"
+        ]
+      },
+      "border-strong": {
+        "role": "neutral",
+        "displayName": "Strong Clay",
+        "canonical": "#c9b8a4",
+        "tonalRamp": [
+          "#130900",
+          "#2f2212",
+          "#4d3f2e",
+          "#6e5e4c",
+          "#8f7f6d",
+          "#b3a28e",
+          "#d7c6b2",
+          "#fdebd7"
+        ]
+      },
+      "ring": {
+        "role": "secondary",
+        "displayName": "Burnt Sienna",
+        "canonical": "#9e4303",
+        "tonalRamp": [
+          "#190500",
+          "#401700",
+          "#6d2c01",
+          "#9d4201",
+          "#c36432",
+          "#ea8856",
+          "#feb693",
+          "#ffeae0"
+        ]
+      },
+      "disabled": {
+        "role": "neutral",
+        "displayName": "Disabled Sand",
+        "canonical": "#f3ede5",
+        "tonalRamp": [
+          "#0e0a06",
+          "#29241e",
+          "#46413b",
+          "#65605a",
+          "#87817a",
+          "#aaa49d",
+          "#cec8c0",
+          "#f3ede5"
+        ]
+      },
+      "disabled-foreground": {
+        "role": "neutral",
+        "displayName": "Disabled Ink",
+        "canonical": "#a8998a",
+        "tonalRamp": [
+          "#130901",
+          "#2e2216",
+          "#4c3f32",
+          "#6c5e51",
+          "#8e8071",
+          "#b1a293",
+          "#d6c6b6",
+          "#fcebdb"
+        ]
+      },
+      "destructive": {
+        "role": "state",
+        "displayName": "Red",
+        "canonical": "#b93815",
+        "tonalRamp": [
+          "#1d0200",
+          "#480c00",
+          "#781b01",
+          "#ad2b02",
+          "#d55232",
+          "#fd7756",
+          "#feb4a1",
+          "#ffe9e3"
+        ]
+      },
+      "destructive-text": {
+        "role": "state",
+        "displayName": "Red Text",
+        "canonical": "#a3300f",
+        "tonalRamp": [
+          "#1d0200",
+          "#480c00",
+          "#781c01",
+          "#a73414",
+          "#ce593a",
+          "#f67d5d",
+          "#ffb4a0",
+          "#fee9e4"
+        ]
+      },
+      "warning": {
+        "role": "state",
+        "displayName": "Amber",
+        "canonical": "#f59e0b",
+        "tonalRamp": [
+          "#140800",
+          "#361f00",
+          "#5d3902",
+          "#875500",
+          "#b37203",
+          "#e19109",
+          "#feba65",
+          "#feebd6"
+        ]
+      },
+      "warning-text": {
+        "role": "state",
+        "displayName": "Amber Text",
+        "canonical": "#a14a06",
+        "tonalRamp": [
+          "#180600",
+          "#3f1800",
+          "#6a2e01",
+          "#994603",
+          "#c1672f",
+          "#e78a54",
+          "#ffb68f",
+          "#ffeade"
+        ]
+      },
+      "success": {
+        "role": "state",
+        "displayName": "Leaf",
+        "canonical": "#7fa04a",
+        "tonalRamp": [
+          "#070e00",
+          "#1c2b00",
+          "#344b02",
+          "#4f6d0f",
+          "#6f8f39",
+          "#91b35d",
+          "#b4d880",
+          "#d9fea5"
+        ]
+      },
+      "success-text": {
+        "role": "state",
+        "displayName": "Leaf Text",
+        "canonical": "#4a6619",
+        "tonalRamp": [
+          "#070e00",
+          "#1c2b01",
+          "#334b01",
+          "#506c20",
+          "#708e44",
+          "#92b266",
+          "#b5d78a",
+          "#dafdae"
+        ]
+      },
+      "dark-primary": {
+        "role": "primary",
+        "displayName": "Dark Cacao",
+        "canonical": "#ffe1b6",
+        "tonalRamp": [
+          "#120900",
+          "#342100",
+          "#553d15",
+          "#765c35",
+          "#997d55",
+          "#bca077",
+          "#e2c49a",
+          "#ffecd1"
+        ]
+      },
+      "dark-primary-foreground": {
+        "role": "primary",
+        "displayName": "Dark Cream On Cacao",
+        "canonical": "#6e2c01",
+        "tonalRamp": [
+          "#190500",
+          "#411700",
+          "#6d2b00",
+          "#914c28",
+          "#b66d49",
+          "#dc906b",
+          "#ffb693",
+          "#feeae0"
+        ]
+      },
+      "dark-primary-hover": {
+        "role": "primary",
+        "displayName": "Dark Cacao Deep",
+        "canonical": "#ffd29a",
+        "tonalRamp": [
+          "#130900",
+          "#352001",
+          "#5b3a02",
+          "#805821",
+          "#a37a44",
+          "#c79c66",
+          "#edc089",
+          "#ffebd4"
+        ]
+      },
+      "dark-primary-text": {
+        "role": "primary",
+        "displayName": "Dark Cacao Ink",
+        "canonical": "#e0b48a",
+        "tonalRamp": [
+          "#150800",
+          "#381e01",
+          "#5d380e",
+          "#7f5830",
+          "#a27951",
+          "#c69c72",
+          "#ecc095",
+          "#feebd9"
+        ]
+      },
+      "dark-highlight": {
+        "role": "secondary",
+        "displayName": "Dark Customer Cream",
+        "canonical": "#3b2414",
+        "tonalRamp": [
+          "#170600",
+          "#351f0f",
+          "#543c2b",
+          "#755b49",
+          "#987c6a",
+          "#bc9e8b",
+          "#e1c2af",
+          "#feeadd"
+        ]
+      },
+      "dark-highlight-foreground": {
+        "role": "secondary",
+        "displayName": "Dark Customer Ink",
+        "canonical": "#ffe1b6",
+        "tonalRamp": [
+          "#120900",
+          "#342100",
+          "#553d15",
+          "#765c35",
+          "#997d55",
+          "#bca077",
+          "#e2c49a",
+          "#ffecd1"
+        ]
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Dark Paper",
+        "canonical": "#1f1f1f",
+        "tonalRamp": [
+          "#0b0b0b",
+          "#252525",
+          "#424242",
+          "#616161",
+          "#828282",
+          "#a5a5a5",
+          "#c9c9c9",
+          "#eeeeee"
+        ]
+      },
+      "dark-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Night",
+        "canonical": "#faf9f5",
+        "tonalRamp": [
+          "#0c0b09",
+          "#262522",
+          "#43423f",
+          "#62615e",
+          "#83827f",
+          "#a6a5a1",
+          "#cac9c5",
+          "#efeeea"
+        ]
+      },
+      "dark-muted-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Bark",
+        "canonical": "#b3a69a",
+        "tonalRamp": [
+          "#120903",
+          "#2d2319",
+          "#4b4035",
+          "#6b5f54",
+          "#8c8074",
+          "#afa297",
+          "#d4c7ba",
+          "#faecdf"
+        ]
+      },
+      "dark-receipt": {
+        "role": "neutral",
+        "displayName": "Dark Receipt Bark",
+        "canonical": "#a8998a",
+        "tonalRamp": [
+          "#130901",
+          "#2e2216",
+          "#4c3f32",
+          "#6c5e51",
+          "#8e8071",
+          "#b1a293",
+          "#d6c6b6",
+          "#fcebdb"
+        ]
+      },
+      "dark-surface": {
+        "role": "neutral",
+        "displayName": "Dark White",
+        "canonical": "#292522",
+        "tonalRamp": [
+          "#0e0a08",
+          "#282421",
+          "#45413e",
+          "#65605d",
+          "#86817e",
+          "#a9a4a0",
+          "#cdc8c4",
+          "#f3ede9"
+        ]
+      },
+      "dark-surface-hover": {
+        "role": "neutral",
+        "displayName": "Dark Warm Tint",
+        "canonical": "#342e2a",
+        "tonalRamp": [
+          "#0f0a07",
+          "#2a2420",
+          "#47413c",
+          "#66605b",
+          "#88817c",
+          "#aba39e",
+          "#cfc7c2",
+          "#f5ede7"
+        ]
+      },
+      "dark-surface-active": {
+        "role": "neutral",
+        "displayName": "Dark Selected Cream",
+        "canonical": "#3b2414",
+        "tonalRamp": [
+          "#170600",
+          "#351f0f",
+          "#543c2b",
+          "#755b49",
+          "#987c6a",
+          "#bc9e8b",
+          "#e1c2af",
+          "#feeadd"
+        ]
+      },
+      "dark-border": {
+        "role": "neutral",
+        "displayName": "Dark Clay",
+        "canonical": "#3a332e",
+        "tonalRamp": [
+          "#0f0a06",
+          "#2a241f",
+          "#48403b",
+          "#67605a",
+          "#89817b",
+          "#aca39d",
+          "#d0c7c1",
+          "#f6ece6"
+        ]
+      },
+      "dark-border-strong": {
+        "role": "neutral",
+        "displayName": "Dark Strong Clay",
+        "canonical": "#5a4f46",
+        "tonalRamp": [
+          "#110904",
+          "#2d231b",
+          "#4a4037",
+          "#6a5f56",
+          "#8c8076",
+          "#afa298",
+          "#d3c6bc",
+          "#f9ece1"
+        ]
+      },
+      "dark-ring": {
+        "role": "secondary",
+        "displayName": "Dark Burnt Sienna",
+        "canonical": "#e0b48a",
+        "tonalRamp": [
+          "#150800",
+          "#381e01",
+          "#5d380e",
+          "#7f5830",
+          "#a27951",
+          "#c69c72",
+          "#ecc095",
+          "#feebd9"
+        ]
+      },
+      "dark-disabled": {
+        "role": "neutral",
+        "displayName": "Dark Disabled Sand",
+        "canonical": "#342e2a",
+        "tonalRamp": [
+          "#0f0a07",
+          "#2a2420",
+          "#47413c",
+          "#66605b",
+          "#88817c",
+          "#aba39e",
+          "#cfc7c2",
+          "#f5ede7"
+        ]
+      },
+      "dark-disabled-foreground": {
+        "role": "neutral",
+        "displayName": "Dark Disabled Ink",
+        "canonical": "#8a7d72",
+        "tonalRamp": [
+          "#120903",
+          "#2d231a",
+          "#4b4036",
+          "#6b5f54",
+          "#8d8075",
+          "#b0a297",
+          "#d4c6ba",
+          "#faecdf"
+        ]
+      },
+      "dark-destructive": {
+        "role": "state",
+        "displayName": "Dark Red",
+        "canonical": "#f06a4a",
+        "tonalRamp": [
+          "#1d0200",
+          "#480c00",
+          "#791b01",
+          "#ad2a02",
+          "#d55132",
+          "#fe7656",
+          "#feb4a2",
+          "#fee9e4"
+        ]
+      },
+      "dark-destructive-text": {
+        "role": "state",
+        "displayName": "Dark Red Text",
+        "canonical": "#f4876b",
+        "tonalRamp": [
+          "#1d0200",
+          "#480d00",
+          "#781b00",
+          "#a13c22",
+          "#c75f44",
+          "#ef8266",
+          "#feb4a1",
+          "#fee9e4"
+        ]
+      },
+      "dark-warning": {
+        "role": "state",
+        "displayName": "Dark Amber",
+        "canonical": "#fbbf24",
+        "tonalRamp": [
+          "#110a00",
+          "#312200",
+          "#553e02",
+          "#7c5b02",
+          "#a57b00",
+          "#cf9c09",
+          "#fbbf23",
+          "#feedc9"
+        ]
+      },
+      "dark-warning-text": {
+        "role": "state",
+        "displayName": "Dark Amber Text",
+        "canonical": "#fbbf24",
+        "tonalRamp": [
+          "#110a00",
+          "#312200",
+          "#553e02",
+          "#7c5b02",
+          "#a57b00",
+          "#cf9c09",
+          "#fbbf23",
+          "#feedc9"
+        ]
+      },
+      "dark-success": {
+        "role": "state",
+        "displayName": "Dark Leaf",
+        "canonical": "#a9c46c",
+        "tonalRamp": [
+          "#080e00",
+          "#1f2a00",
+          "#394901",
+          "#556b07",
+          "#758e35",
+          "#97b15a",
+          "#bad67d",
+          "#dffca2"
+        ]
+      },
+      "dark-success-text": {
+        "role": "state",
+        "displayName": "Dark Leaf Text",
+        "canonical": "#b3cc7a",
+        "tonalRamp": [
+          "#080d00",
+          "#1f2a00",
+          "#394900",
+          "#566b15",
+          "#768d3c",
+          "#98b05f",
+          "#bcd583",
+          "#e1fba7"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "greeting": {
+        "displayName": "Greeting",
+        "purpose": "The advisor's first line, capped at 65ch."
+      },
+      "input": {
+        "displayName": "Input",
+        "purpose": "The composer's text, kept at 16px so a phone does not zoom on focus."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "The name in the header and the card title."
+      },
+      "message": {
+        "displayName": "Message",
+        "purpose": "The customer's bubble and the advisor's prose."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Starters, cart lines, billing fields, empty states."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "New chat, attachment tags, the Heard and Seen notes, composer problems."
+      },
+      "trace-row": {
+        "displayName": "Trace Row",
+        "purpose": "A step's title."
+      },
+      "summary": {
+        "displayName": "Summary",
+        "purpose": "Card summary, working status, header tagline."
+      },
+      "meta": {
+        "displayName": "Meta",
+        "purpose": "Tool buttons and badges. The 11px floor."
+      },
+      "code": {
+        "displayName": "Code",
+        "purpose": "Code and output blocks."
+      }
+    },
+    "shadows": [
+      {
+        "name": "card",
+        "value": "0 1px 4px rgb(37 39 59 / .06)",
+        "dark": "0 1px 4px rgb(0 0 0 / .3)",
+        "purpose": "Resting touchable pieces on the thread: starters and the jump-to-latest button."
+      },
+      {
+        "name": "composer",
+        "value": "0 4px 6px -1px rgb(37 39 59 / .08), 0 2px 4px -2px rgb(37 39 59 / .06)",
+        "purpose": "The input pill at rest."
+      },
+      {
+        "name": "composer-focus",
+        "value": "0 0 0 3px color-mix(in oklab, var(--primary) 12%, transparent)",
+        "purpose": "The composer ring while the text has focus, with a 40% cacao border."
+      },
+      {
+        "name": "float",
+        "value": "0 12px 32px rgb(37 39 59 / .14)",
+        "dark": "0 12px 32px rgb(0 0 0 / .45)",
+        "purpose": "What hovers over the conversation: dock bubbles, the card, the peek."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-responsive",
+        "value": "cubic-bezier(.2, .8, .2, 1)",
+        "purpose": "Things that answer the visitor: bubbles, card, chevrons, drawers, press scale."
+      },
+      {
+        "name": "ease-emphasized",
+        "value": "cubic-bezier(.22, 1, .36, 1)",
+        "purpose": "Things that report news: trace rows, notes, the check, the flash on a changed value."
+      },
+      {
+        "name": "state",
+        "value": "150ms",
+        "purpose": "Hover background and color."
+      },
+      {
+        "name": "drawer",
+        "value": "160ms",
+        "purpose": "Trace drawer and step bodies opening."
+      },
+      {
+        "name": "row-enter",
+        "value": "240ms",
+        "purpose": "A live trace row arriving."
+      },
+      {
+        "name": "check-draw",
+        "value": "260ms, then fade over 1100ms after 700ms",
+        "purpose": "The check of a finished step."
+      },
+      {
+        "name": "card-open",
+        "value": "340ms",
+        "purpose": "The card scaling from its dock bubble; the dock bubble popping in."
+      },
+      {
+        "name": "arrive",
+        "value": "420ms",
+        "purpose": "A bubble or an answer arriving."
+      },
+      {
+        "name": "note-reveal",
+        "value": "520ms",
+        "purpose": "A Heard or Seen note wiping open."
+      },
+      {
+        "name": "flash",
+        "value": "900ms",
+        "purpose": "A cacao tint fading off a changed quantity or field."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "1ms",
+        "purpose": "All animation and transition durations under prefers-reduced-motion; the shimmer mask is removed."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px",
+        "purpose": "The customer's bubble narrows to 70%."
+      },
+      {
+        "name": "md",
+        "value": "768px",
+        "purpose": "Gutter 2rem, header padding 1.75rem."
+      },
+      {
+        "name": "lg",
+        "value": "1024px",
+        "purpose": "The card floats over the conversation without moving it; under it the card is a bottom sheet."
+      },
+      {
+        "name": "coarse",
+        "value": "(pointer: coarse)",
+        "purpose": "Tools, tabs, New chat, small round buttons and trace rows rise to 2.75rem."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Send Button",
+      "kind": "button",
+      "refersTo": "button-send",
+      "description": "The only filled button: a cacao circle with a cream arrow, sand until there is something to send.",
+      "html": "<button class=\"ds-send\" type=\"button\" aria-label=\"Send\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 19V5M6 11l6-6 6 6\"/></svg></button>",
+      "css": ".ds-icon { display: block; width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }.ds-send { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 0; border-radius: 50%; background: var(--primary, #6e2c01); color: var(--primary-foreground, #ffe1b6); cursor: pointer; transition: background 150ms, transform 120ms var(--ease-responsive, cubic-bezier(.2, .8, .2, 1)); } .ds-send:hover { background: var(--primary-hover, #4f1f01); } .ds-send:active { transform: scale(.95); } .ds-send:focus-visible { outline: 2px solid var(--ring, #9e4303); outline-offset: 2px; } .ds-send:disabled { background: var(--disabled, #f3ede5); color: var(--disabled-foreground, #a8998a); cursor: default; }"
+    },
+    {
+      "name": "Round Icon Button",
+      "kind": "button",
+      "refersTo": "button-round",
+      "description": "Ghost circle for attach, record and close.",
+      "html": "<button class=\"ds-round\" type=\"button\" aria-label=\"Attach a photo\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"/><circle cx=\"9\" cy=\"10\" r=\"1.5\"/><path d=\"m21 16-5-5-8 8\"/></svg></button>",
+      "css": ".ds-icon { display: block; width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }.ds-round { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted-foreground, #6b5d51); cursor: pointer; transition: background 150ms, color 150ms, transform 120ms var(--ease-responsive, cubic-bezier(.2, .8, .2, 1)); }.ds-round:hover { background: var(--surface-hover, #fff5e6); color: var(--foreground, #1f1f1f); } .ds-round:active { transform: scale(.95); } .ds-round:focus-visible { outline: 2px solid var(--ring, #9e4303); outline-offset: 2px; }"
+    },
+    {
+      "name": "Tool Button",
+      "kind": "button",
+      "refersTo": "button-tool",
+      "description": "Small row action under an answer; here the trace toggle with its step count.",
+      "html": "<button class=\"ds-tool\" type=\"button\" aria-expanded=\"false\">Show trace · 9 steps</button>",
+      "css": ".ds-tool { display: inline-flex; align-items: center; gap: .3rem; height: 1.75rem; padding: 0 .5rem; border: 0; border-radius: .5rem; background: none; color: var(--muted-foreground, #6b5d51); font-family: var(--sans, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", sans-serif); font-size: .6875rem; font-weight: 500; cursor: pointer; transition: background 150ms, color 150ms; } .ds-tool:hover { background: var(--surface-hover, #fff5e6); color: var(--foreground, #1f1f1f); } .ds-tool:focus-visible { outline: 2px solid var(--ring, #9e4303); outline-offset: 2px; }"
+    },
+    {
+      "name": "Starter",
+      "kind": "chip",
+      "refersTo": "starter",
+      "description": "White stadium under the greeting that sends its text on click.",
+      "html": "<button class=\"ds-starter\" type=\"button\">Worms are eating my corn leaves, what do you have?</button>",
+      "css": ".ds-starter { min-height: 2.5rem; padding: .5rem .875rem; border: 1px solid var(--border, #e5d5c3); border-radius: 1.25rem; background: var(--surface, #fff); box-shadow: var(--shadow-card, 0 1px 4px rgb(37 39 59 / .06)); color: var(--foreground, #1f1f1f); font-family: var(--sans, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", sans-serif); font-size: .875rem; line-height: 1.35; text-align: left; cursor: pointer; transition: background 150ms, border-color 150ms, transform 120ms var(--ease-responsive, cubic-bezier(.2, .8, .2, 1)); } .ds-starter:hover { background: var(--surface-hover, #fff5e6); border-color: var(--border-strong, #c9b8a4); } .ds-starter:active { transform: scale(.98); } .ds-starter:focus-visible { outline: 2px solid var(--ring, #9e4303); outline-offset: 2px; }"
+    },
+    {
+      "name": "Composer",
+      "kind": "input",
+      "refersTo": "composer",
+      "description": "White pill holding attach, the text, record and send; a cacao ring on focus.",
+      "html": "<form class=\"ds-composer\"><div class=\"ds-line\"><button class=\"ds-round\" type=\"button\" aria-label=\"Attach a photo\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"3\" y=\"5\" width=\"18\" height=\"14\" rx=\"3\"/><circle cx=\"9\" cy=\"10\" r=\"1.5\"/><path d=\"m21 16-5-5-8 8\"/></svg></button><textarea class=\"ds-text\" rows=\"1\" placeholder=\"Write to the advisor\" aria-label=\"Your message\"></textarea><button class=\"ds-round\" type=\"button\" aria-label=\"Record a voice note\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"9\" y=\"3\" width=\"6\" height=\"11\" rx=\"3\"/><path d=\"M5 11a7 7 0 0 0 14 0M12 18v3\"/></svg></button><button class=\"ds-round ds-go\" type=\"button\" aria-label=\"Send\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 19V5M6 11l6-6 6 6\"/></svg></button></div></form>",
+      "css": ".ds-icon { display: block; width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }.ds-round { display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted-foreground, #6b5d51); cursor: pointer; transition: background 150ms, color 150ms, transform 120ms var(--ease-responsive, cubic-bezier(.2, .8, .2, 1)); }.ds-round:hover { background: var(--surface-hover, #fff5e6); color: var(--foreground, #1f1f1f); } .ds-go, .ds-go:hover { background: var(--primary, #6e2c01); color: var(--primary-foreground, #ffe1b6); } .ds-composer { padding: .375rem .75rem; border: 1px solid var(--border, #e5d5c3); border-radius: 1.5rem; background: var(--surface, #fff); box-shadow: 0 4px 6px -1px rgb(37 39 59 / .08), 0 2px 4px -2px rgb(37 39 59 / .06); transition: border-color 150ms, box-shadow 150ms; } .ds-composer:focus-within { border-color: color-mix(in oklab, var(--primary, #6e2c01) 40%, transparent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary, #6e2c01) 12%, transparent); } .ds-line { display: flex; align-items: flex-end; gap: .125rem; } .ds-text { flex: 1; min-width: 0; padding: .625rem .375rem; border: 0; outline: 0; resize: none; background: transparent; color: var(--foreground, #1f1f1f); font-family: var(--sans, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", sans-serif); font-size: 1rem; line-height: 1.5rem; caret-color: var(--primary-text, #6e2c01); } .ds-text::placeholder { color: var(--muted-foreground, #6b5d51); opacity: 1; }"
+    },
+    {
+      "name": "Customer Bubble",
+      "kind": "custom",
+      "refersTo": "bubble-customer",
+      "description": "The customer's message, cut at the top right, with the note showing what the page understood.",
+      "html": "<div class=\"ds-bubble\">What is eating my corn?<div class=\"ds-note\"><b>Seen in the photo</b>A green caterpillar on a corn leaf.</div></div>",
+      "css": ".ds-bubble { display: inline-block; max-width: 24rem; padding: .5rem .875rem; border-radius: 1.25rem; border-top-right-radius: .375rem; background: var(--highlight, #ffe1b6); color: var(--highlight-foreground, #6e2c01); font-family: var(--sans, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", sans-serif); font-size: .9375rem; line-height: 1.625; } .ds-note { margin: .375rem -.375rem -.125rem; padding: .5rem .625rem; border-radius: .75rem; background: color-mix(in oklab, var(--background, #faf9f5) 70%, transparent); color: var(--foreground, #1f1f1f); font-size: .8125rem; line-height: 1.5; } .ds-note b { display: block; color: var(--muted-foreground, #6b5d51); font-size: .6875rem; font-weight: 600; }"
+    },
+    {
+      "name": "Source Pill",
+      "kind": "chip",
+      "refersTo": "pill-source",
+      "description": "One datasheet cited, in mono, under the answer and inside a trace step.",
+      "html": "<span class=\"ds-pill\">datasheets/emamectina-5-sg.md</span>",
+      "css": ".ds-pill { display: inline-block; max-width: 100%; overflow: hidden; padding: .1rem .5rem; border-radius: 999px; background: var(--surface-hover, #fff5e6); color: var(--muted-foreground, #6b5d51); font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }"
+    },
+    {
+      "name": "Agent Trace",
+      "kind": "custom",
+      "refersTo": "trace",
+      "description": "The signature: a hairline outline on paper with one row per step, the status at the end of the row.",
+      "html": "<section class=\"ds-trace\" aria-label=\"Agent trace\"><div class=\"ds-head\"><strong>Agent trace</strong><span>2 steps</span></div><button class=\"ds-row\" type=\"button\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 3v18M5 21h14M3 7h18M6 7l-3 7a3 3 0 0 0 6 0zM18 7l-3 7a3 3 0 0 0 6 0z\"/></svg><span class=\"ds-type\">Judge</span><span class=\"ds-title\">Reading the message</span><span class=\"ds-time\">2.3 s</span><svg class=\"ds-icon ds-chev\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\"/></svg></button><button class=\"ds-row\" type=\"button\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><rect x=\"4\" y=\"8\" width=\"16\" height=\"12\" rx=\"2\"/><path d=\"M12 8V4M9 13v1M15 13v1\"/></svg><span class=\"ds-type\">Searcher</span><span class=\"ds-title\">Searching the catalog</span><span class=\"ds-cut\">cut off</span><svg class=\"ds-icon ds-chev\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\"/></svg></button></section>",
+      "css": ".ds-icon { display: block; width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }.ds-trace { max-width: 36rem; padding: .5rem; border: 1px solid var(--border, #e5d5c3); border-radius: .75rem; color: var(--foreground, #1f1f1f); font-family: var(--sans, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", sans-serif); } .ds-head { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; padding: .1rem .4rem .35rem; } .ds-head strong { font-size: .78rem; font-weight: 600; } .ds-head span { color: var(--muted-foreground, #6b5d51); font-size: .72rem; font-variant-numeric: tabular-nums; } .ds-row { display: flex; align-items: center; gap: .45rem; width: 100%; min-height: 1.75rem; padding: .3rem .4rem; border: 0; border-radius: .5rem; background: none; color: inherit; font: inherit; font-size: .8rem; text-align: left; cursor: pointer; transition: background 150ms; } .ds-row:hover { background: var(--surface-hover, #fff5e6); } .ds-row:focus-visible { outline: 2px solid var(--ring, #9e4303); outline-offset: 2px; } .ds-row .ds-icon { flex: none; width: .95rem; height: .95rem; color: var(--muted-foreground, #6b5d51); } .ds-row .ds-chev { width: .85rem; height: .85rem; } .ds-type, .ds-time, .ds-cut { flex: none; color: var(--muted-foreground, #6b5d51); font-size: .72rem; } .ds-time { font-variant-numeric: tabular-nums; } .ds-title { flex: 1 1 auto; min-width: 0; overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; } .ds-cut { font-weight: 500; }"
+    },
+    {
+      "name": "Context Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The floating cart or billing card: round icon, title with status pill, summary, close.",
+      "html": "<section class=\"ds-card\" aria-label=\"Cart\"><header class=\"ds-card-head\"><span class=\"ds-card-icon\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 4h1.6c.5 0 .9.3 1 .8L6 7m0 0 1.3 6.4c.1.6.6 1 1.2 1h8.2c.6 0 1.1-.4 1.2-1L19.5 7H6Zm3 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z\"/></svg></span><span class=\"ds-card-copy\"><span class=\"ds-card-title\"><strong>Cart</strong><span class=\"ds-tone\">Cannot charge yet</span></span><span class=\"ds-card-summary\">5 units · To be calculated</span></span><button class=\"ds-close\" type=\"button\" aria-label=\"Close Cart\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M7 7l10 10M17 7 7 17\"/></svg></button></header><ul class=\"ds-lines\"><li><span class=\"ds-qty\">5</span><span class=\"ds-what\"><b>Emamectin 5 SG</b><span>100 g sachet</span></span><span class=\"ds-sub\">–</span></li></ul></section>",
+      "css": ".ds-icon { display: block; width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }.ds-card { width: min(22rem, 100%); overflow: hidden; border: 1px solid var(--border, #e5d5c3); border-radius: 1.25rem; background: var(--surface, #fff); box-shadow: var(--shadow-float, 0 12px 32px rgb(37 39 59 / .14)); color: var(--foreground, #1f1f1f); font-family: var(--sans, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", sans-serif); } .ds-card-head { display: flex; align-items: center; gap: .7rem; padding: .85rem .6rem .85rem .9rem; border-bottom: 1px solid var(--border, #e5d5c3); } .ds-card-icon { flex: none; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: color-mix(in oklab, var(--primary, #6e2c01) 12%, transparent); color: var(--primary-text, #6e2c01); } .ds-card-copy { flex: 1; min-width: 0; display: grid; gap: .1rem; } .ds-card-title { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .45rem; } .ds-card-title strong { font-size: .9375rem; font-weight: 650; letter-spacing: -.015em; } .ds-tone { padding: .15rem .5rem; border-radius: 999px; background: color-mix(in oklab, var(--warning, #f59e0b) 16%, transparent); color: var(--warning-text, #a14a06); font-size: .6875rem; font-weight: 600; white-space: nowrap; } .ds-card-summary { color: var(--muted-foreground, #6b5d51); font-size: .75rem; font-variant-numeric: tabular-nums; } .ds-close { flex: none; display: grid; place-items: center; width: 2rem; height: 2rem; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--muted-foreground, #6b5d51); cursor: pointer; transition: background 150ms, color 150ms; } .ds-close:hover { background: var(--surface-hover, #fff5e6); color: var(--foreground, #1f1f1f); } .ds-close:focus-visible { outline: 2px solid var(--ring, #9e4303); outline-offset: 2px; } .ds-close .ds-icon { width: 1rem; height: 1rem; } .ds-lines { margin: 0; padding: 0 1rem; list-style: none; } .ds-lines li { display: flex; align-items: center; gap: .75rem; padding: .625rem 0; } .ds-qty { flex: none; display: grid; place-items: center; min-width: 2rem; height: 2rem; padding: 0 .375rem; border-radius: .5rem; background: var(--surface-active, #ffe1b6); font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; } .ds-what { flex: 1; min-width: 0; } .ds-what b { display: block; font-size: .875rem; font-weight: 500; } .ds-what span { display: block; color: var(--muted-foreground, #6b5d51); font-size: .75rem; font-variant-numeric: tabular-nums; } .ds-sub { flex: none; font-size: .875rem; font-variant-numeric: tabular-nums; }"
+    },
+    {
+      "name": "Dock Bubble",
+      "kind": "custom",
+      "refersTo": "dock-bubble",
+      "description": "Round white bubble that opens a card, with a cacao count badge.",
+      "html": "<button class=\"ds-dock\" type=\"button\" aria-label=\"Cart, 5 units\"><svg class=\"ds-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M3 4h1.6c.5 0 .9.3 1 .8L6 7m0 0 1.3 6.4c.1.6.6 1 1.2 1h8.2c.6 0 1.1-.4 1.2-1L19.5 7H6Zm3 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z\"/></svg><span class=\"ds-count\">5</span></button>",
+      "css": ".ds-icon { display: block; width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }.ds-dock { position: relative; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; padding: 0; border: 1px solid var(--border, #e5d5c3); border-radius: 50%; background: var(--surface, #fff); box-shadow: var(--shadow-float, 0 12px 32px rgb(37 39 59 / .14)); color: var(--primary-text, #6e2c01); cursor: pointer; transition: background 150ms, transform 120ms var(--ease-responsive, cubic-bezier(.2, .8, .2, 1)); } .ds-dock:hover { background: var(--surface-hover, #fff5e6); } .ds-dock:active { transform: scale(.95); } .ds-dock:focus-visible { outline: 2px solid var(--ring, #9e4303); outline-offset: 2px; } .ds-count { position: absolute; top: -.2rem; right: -.2rem; min-width: 1.15rem; height: 1.15rem; padding: 0 .25rem; border-radius: 999px; background: var(--primary, #6e2c01); color: var(--primary-foreground, #ffe1b6); font-family: var(--sans, -apple-system, BlinkMacSystemFont, \"SF Pro Text\", \"SF Pro Display\", \"Segoe UI\", sans-serif); font-size: .6875rem; font-weight: 700; line-height: 1.15rem; text-align: center; font-variant-numeric: tabular-nums; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Proof Beside the Answer",
+    "overview": "Open Market is a sales chat that shows its work. The customer's words sit in a warm cream bubble; the advisor's answer is plain prose with no bubble around it; under the answer lies the real trace of what the agent opened, and beside it float the cart and the billing details the agent is filling in. It is not a chatbot widget. The page is the whole conversation, and everything on it is either something said or evidence for it.\n\nThe ground is quiet paper, the ink is near black, and one cacao brown carries every action. Density is that of a working tool: compact rows, small tabular figures, hairlines instead of panels. Warmth comes from the neutrals, which are all tinted toward clay, and from soft corners. Nothing is decorative: the only imagery is the customer's own photo.\n\nDepth is reserved for what floats. The thread stays flat, so a card or a dock bubble reads at once as something beside the conversation, not part of it.",
+    "keyCharacteristics": [
+      "Paper ground, white only where something floats or takes input.",
+      "One brown for action, always paired with cream.",
+      "Answers as bare prose at reading width; only the customer speaks in a bubble.",
+      "Traces, hairlines and tabular figures as the visible proof.",
+      "Soft corners, with one small corner on the speaker's side of the bubble.",
+      "Light and dark follow the system; there is no theme switch."
+    ],
+    "rules": [
+      {
+        "name": "The Cream On Cacao Rule",
+        "body": "Cacao fill wears cream, and customer cream wears cacao letters. In dark mode the pair inverts: cream fill, cacao icon. No other color goes on a cacao fill.",
+        "section": "colors"
+      },
+      {
+        "name": "The Fill Versus Text Rule",
+        "body": "Every state color has a fill and a text form. Fills only tint or dot; letters and icons always use the `-text` form. A new state brings both, and the text form reaches 4.5:1 on paper, white and the warm tints.",
+        "section": "colors"
+      },
+      {
+        "name": "The Warm Neutral Rule",
+        "body": "Borders, grounds and text neutrals are tinted toward clay in both modes. The cool tint exists only inside the light-mode shadows.",
+        "section": "colors"
+      },
+      {
+        "name": "The Eleven Pixel Floor Rule",
+        "body": "No text measures under 11px (0.6875rem): not a badge, not a stamp.",
+        "section": "typography"
+      },
+      {
+        "name": "The Machine Text Rule",
+        "body": "Mono is only for what a machine wrote: source paths, REPL step titles, Code and Output blocks. Words the advisor or the page says to a person are never mono.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tabular Figures Rule",
+        "body": "Clock times, durations, tokens, quantities and prices use tabular numerals, so figures do not shift as a step's seconds count up or a line changes.",
+        "section": "typography"
+      },
+      {
+        "name": "The Shared Edges Rule",
+        "body": "The text, the bubble and the input share the same left and right edges, always. Opening a card moves neither: it floats over them, by the author's decision, and on narrower desktops it may cover the right of the column. Platform moves the thread.",
+        "section": "layout"
+      },
+      {
+        "name": "The Flat Thread Rule",
+        "body": "The customer's bubble, the answer and the trace have no shadow. A trace is a hairline outline on paper, so proof reads as part of the page, not as an object on it.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Speaker's Corner Rule",
+        "body": "The customer's bubble is fully round except for its top right corner, cut to `tail` on the speaker's side. The three-dot wait marks the agent's side the same way, at bottom left, and disappears when the answer arrives.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Folded Proof Rule",
+        "body": "The trace is open while the turn runs and folds when it ends, staying folded. The toggle carries the count (\"Show trace · 9 steps\"), so the proof is one click away and the conversation stays readable.",
+        "section": "components"
+      },
+      {
+        "name": "The Honest Cut Rule",
+        "body": "A step the stream never closed is muted \"cut off\", in Bark at medium weight, never red and never \"failed\". The page stopped seeing it, which does not mean it failed.",
+        "section": "components"
+      },
+      {
+        "name": "The Three Ways Out Rule",
+        "body": "On desktop the card closes with Esc, its close button or its dock bubble, and clicking the thread leaves it open, so the visitor can read and scroll beside it. As a sheet it also closes on the scrim and by dragging down.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do put cream on cacao, and cacao letters on customer cream.",
+      "Do use the `-text` form for any colored letter or icon.",
+      "Do keep answers as bare prose capped at 70ch.",
+      "Do keep the thread and the composer on the same edges in every state.",
+      "Do show what the page understood inside the customer's own bubble.",
+      "Do use tabular numerals for times, quantities and prices.",
+      "Do give every control 2.75rem on a coarse pointer.",
+      "Do take any new value from these tokens, in both modes."
+    ],
+    "donts": [
+      "Don't put an answer in a bubble: the only agent-side bubble is the three-dot wait.",
+      "Don't put a shadow on the customer's bubble, the answer or the trace.",
+      "Don't put mono on anything a person is told.",
+      "Don't set any text under 11px.",
+      "Don't mark a cut step as failed, or color it red.",
+      "Don't unfold the trace after a turn on its own.",
+      "Don't close the desktop card on an outside click.",
+      "Don't show a step, a percentage or a progress bar that the stream did not send.",
+      "Don't take an orange primary or a white customer bubble from platform's `DESIGN.md`: its stylesheet moved on and so did this page.",
+      "Don't use cool greys for borders, grounds or text."
+    ]
+  }
+}

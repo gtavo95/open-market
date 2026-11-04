@@ -20,9 +20,11 @@ searcher reads it: "the same as last time" reaches it with the product.
 
 from __future__ import annotations
 
+import json
 import os
+from collections.abc import Callable
 
-from catalejo.core import Cell, EffectOp, Log, Memory, Message, PlanOp, Report, Role
+from catalejo.core import Cell, EffectOp, Log, Memory, Message, PlanOp, Report, Role, then
 from catalejo.llm import Claude, Gemini, Muse, OpenAI, Provider
 from catalejo.rlm import Dossier, memory_search, orchestrate, paths
 
@@ -38,8 +40,38 @@ from .roles.searcher import search_catalog, with_memory
 from .roles.writer import write_reply
 from .world.catalog import corpus, voice
 from .world.dialogue import History, wrap
+from .world.trace import Span, note, observed
 from .world.question_judge import QuestionJudge
 from .world.recap import Recaps
+
+
+def moved(seen: Log, out: Log, step: Span) -> None:
+    """The trace of a stretch of the turn: what it moved in the plan and in the effects, as they came out."""
+    for op in out.course:
+        note("plan", f"{op.verb} {op.id}", text=op.intent)
+    for effect in out.effects:
+        note("effect", f"{effect.verb} {effect.id}", text=effect.note)
+
+
+def judged(question_judge: QuestionJudge | None) -> Callable[[Log, Log, Span], None]:
+    """The trace of the way in: what the judge read, with its numbers, and what that moved."""
+
+    def detail(seen: Log, out: Log, step: Span) -> None:
+        judgment = question_judge.read(seen) if question_judge is not None else None
+        if judgment is not None:
+            read = {k: v for k, v in judgment.as_dict().items() if k in ("state", "p", "labels", "error")}
+            step.fill(output=json.dumps(read, ensure_ascii=False, indent=2, default=str))
+        moved(seen, out, step)
+
+    return detail
+
+
+def reported(seen: Log, out: Log, step: Span) -> None:
+    """The trace of the search: the report that crossed the boundary and the datasheets it cites."""
+    step.fill(
+        text="\n\n".join(r.text for r in out.reports),
+        sources=[s for r in out.reports for s in r.sources],
+    )
 
 
 def build(
@@ -84,6 +116,10 @@ def build(
     to read `latest` and `reset` after the turn. Without it, an empty one that lasts as long as the
     agent. It goes on the way in after the order and before the effects, because the SAP draft
     reads what it noted; the sale and the writer read it for `data`.
+
+    Each stretch goes inside `observed`, which draws its step on the page and returns the Log as
+    is. `before` and `after` are one `then` each: `then` is associative, so they run as they did
+    when `orchestrate` chained them cell by cell.
     """
     catalog_text = corpus()
     dossier = dossier if dossier is not None else Dossier()
@@ -100,22 +136,24 @@ def build(
         keep=dossier.keep(MEMORY_WHO),
         contained=contained,
     )
+    way_in = then(
+        form.cell(model, question_judge),
+        sale_closed(sale_steps),
+        take_order(question_judge),
+        capture_effects(question_judge, form),
+        asked_handoff(question_judge),
+        alerts(question_judge),
+    )
+    way_out = then(
+        sale_steps,
+        fill_effect_args(paths(catalog_text), question_judge, form),
+        human_handoff(question_judge),
+    )
     return orchestrate(
-        [with_memory(recall, catalog_search, deadline)],
-        write_reply(catalog_text, model, voice(), deadline=deadline, question_judge=question_judge, form=form),
-        before=[
-            form.cell(model, question_judge),
-            sale_closed(sale_steps),
-            take_order(question_judge),
-            capture_effects(question_judge, form),
-            asked_handoff(question_judge),
-            alerts(question_judge),
-        ],
-        after=[
-            sale_steps,
-            fill_effect_args(paths(catalog_text), question_judge, form),
-            human_handoff(question_judge),
-        ],
+        [observed("searcher", "Searching the catalog", with_memory(recall, catalog_search, deadline), reported)],
+        observed("writer", "Writing the answer", write_reply(catalog_text, model, voice(), deadline=deadline, question_judge=question_judge, form=form)),
+        before=[observed("judge", "Reading the message", way_in, judged(question_judge))],
+        after=[observed("check", "Closing the turn", way_out, moved)],
     )
 
 

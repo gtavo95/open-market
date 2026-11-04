@@ -191,8 +191,9 @@ The `Dockerfile` builds the app with the bundle in `okf/`. It needs `MUSE_API_KE
 
 ## Endpoints
 
-- `GET /` — the chat page
+- `GET /` — the chat page: the conversation, the live trace of each turn, and read-only cart and billing cards
 - `POST /chat` — `{"session": "...", "text": "...", "image": "data:image/jpeg;base64,...", "audio": "<WAV in base64>"}`, no login, capped by `DEMO_TURNS`
+- `POST /chat/stream` — same body and same limits, answered as NDJSON: a `step` event per trace node, then `done` (the `/chat` fields) or `error`. The trace only observes the turn
 - `POST /queries` — `{"question": "...", "history": [{"question": "...", "answer": "..."}], "sale": [...], "effects": [...]}`
 - `GET /queries/catalog` — how many datasheets are loaded and how many slots are free
 - `GET /health` — whether the process is alive and whether the advisor got built

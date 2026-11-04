@@ -4,127 +4,1290 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Open Market</title>
+<meta name="description" content="A farm-input advisor. Ask, send a photo of the pest, or leave a voice note.">
+<meta name="theme-color" content="#faf9f5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1f1f1f" media="(prefers-color-scheme: dark)">
 <style>
+:root {
+  color-scheme: light dark;
+  --background: #faf9f5; --foreground: #1f1f1f;
+  --primary: #6e2c01; --primary-foreground: #ffe1b6; --primary-hover: #4f1f01; --primary-text: #6e2c01;
+  --muted-foreground: #6b5d51;
+  --surface: #fff; --surface-hover: #fff5e6; --surface-active: #ffe1b6;
+  --highlight: #ffe1b6; --highlight-foreground: #6e2c01; --receipt: #6b5d51;
+  --border: #e5d5c3; --border-strong: #c9b8a4; --ring: #9e4303;
+  --destructive: #b93815; --destructive-text: #a3300f;
+  --warning: #f59e0b; --warning-text: #a14a06;
+  --success: #7fa04a; --success-text: #4a6619;
+  --disabled: #f3ede5; --disabled-foreground: #a8998a;
+  --shadow-card: 0 1px 4px rgb(37 39 59 / .06);
+  --shadow-float: 0 12px 32px rgb(37 39 59 / .14);
+  --shadow-composer: 0 4px 6px -1px rgb(37 39 59 / .08), 0 2px 4px -2px rgb(37 39 59 / .06);
+  --ease-responsive: cubic-bezier(.2, .8, .2, 1);
+  --ease-emphasized: cubic-bezier(.22, 1, .36, 1);
+  --sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --above: 6rem;
+  --edge: 1rem;
+  --gutter: 1rem;
+  --measure: 56rem;
+}
+@media (prefers-color-scheme: dark) {
   :root {
-    --paper: #f6f3ea; --card: #fffdf7; --ink: #23291f; --soft: #68705f; --line: #ddd7c6;
-    --leaf: #2f6b3a; --leaf-ink: #fbfaf3; --warn: #a3401f;
+    --background: #1f1f1f; --foreground: #faf9f5;
+    --primary: #ffe1b6; --primary-foreground: #6e2c01; --primary-hover: #ffd29a; --primary-text: #e0b48a;
+    --muted-foreground: #b3a69a;
+    --surface: #292522; --surface-hover: #342e2a; --surface-active: #3b2414;
+    --highlight: #3b2414; --highlight-foreground: #ffe1b6; --receipt: #a8998a;
+    --border: #3a332e; --border-strong: #5a4f46; --ring: #e0b48a;
+    --destructive: #f06a4a; --destructive-text: #f4876b;
+    --warning: #fbbf24; --warning-text: #fbbf24;
+    --success: #a9c46c; --success-text: #b3cc7a;
+    --disabled: #342e2a; --disabled-foreground: #8a7d72;
+    --shadow-card: 0 1px 4px rgb(0 0 0 / .3);
+    --shadow-float: 0 12px 32px rgb(0 0 0 / .45);
+    --shadow-composer: 0 4px 6px -1px rgb(0 0 0 / .32), 0 2px 4px -2px rgb(0 0 0 / .24);
   }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper: #171a15; --card: #20241d; --ink: #eceadf; --soft: #a0a795; --line: #363b30;
-      --leaf: #5da86b; --leaf-ink: #10140e; --warn: #e58a68;
-    }
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body {
+  display: flex; flex-direction: column; height: 100dvh; overflow: hidden;
+  background: var(--background); color: var(--foreground);
+  font-family: var(--sans); -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+::selection { background: var(--highlight); color: var(--highlight-foreground); }
+button, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; background: none; border: 0; padding: 0; }
+button:disabled { cursor: default; }
+a { color: var(--primary-text); text-underline-offset: 2px; text-decoration-color: var(--border-strong); }
+a:hover { text-decoration-color: currentColor; }
+:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+svg { display: block; }
+.icon { width: 1.25rem; height: 1.25rem; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* Header */
+.top {
+  flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  height: 3.5rem; padding: 0 1rem; padding-top: env(safe-area-inset-top);
+  border-bottom: 1px solid var(--border);
+}
+.brand { min-width: 0; display: flex; align-items: baseline; gap: .6rem; }
+.brand h1 { margin: 0; font-size: .9375rem; font-weight: 650; letter-spacing: -.015em; white-space: nowrap; }
+.brand p { margin: 0; overflow: hidden; color: var(--muted-foreground); font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
+.new {
+  flex: none; display: inline-flex; align-items: center; gap: .35rem; height: 2.25rem; padding: 0 .75rem;
+  border-radius: 9999px; color: var(--muted-foreground); font-size: .8125rem; font-weight: 500;
+  transition: background 150ms, color 150ms;
+}
+.new:hover:not(:disabled) { background: var(--surface-hover); color: var(--foreground); }
+.new:disabled { opacity: .5; }
+.new .icon { width: 1rem; height: 1rem; }
+
+/* Host */
+.host { position: relative; flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.thread { flex: 1; min-height: 0; padding-bottom: var(--above); overflow-y: auto; scrollbar-width: none; overscroll-behavior: contain; }
+.thread::-webkit-scrollbar { display: none; }
+.host[data-cards="true"] .thread { padding-bottom: calc(var(--above) + 4.5rem); }
+.column {
+  display: flex; flex-direction: column; justify-content: flex-end; min-height: 100%;
+  width: 100%; max-width: calc(var(--measure) + 2 * var(--gutter)); margin: 0 auto; padding: 1.5rem var(--gutter);
+}
+
+/* Greeting */
+.hello { display: grid; gap: .875rem; padding-bottom: .25rem; }
+.hello p { margin: 0; max-width: 65ch; font-size: 1.0625rem; line-height: 1.6; }
+.starters { display: flex; flex-wrap: wrap; gap: .5rem; }
+.starter {
+  min-height: 2.5rem; padding: .5rem .875rem; border: 1px solid var(--border); border-radius: 1.25rem;
+  background: var(--surface); box-shadow: var(--shadow-card); font-size: .875rem; line-height: 1.35; text-align: left;
+  transition: background 150ms, border-color 150ms, transform 120ms var(--ease-responsive);
+}
+.starter:hover { background: var(--surface-hover); border-color: var(--border-strong); }
+.starter:active { transform: scale(.98); }
+
+/* Messages */
+.turn { display: flex; flex-direction: column; }
+.turn + .turn { margin-top: 2rem; }
+.me { align-self: flex-end; display: flex; flex-direction: column; align-items: flex-end; max-width: 85%; animation: arrive 420ms var(--ease-responsive) both; transform-origin: bottom right; }
+.bubble {
+  padding: .5rem .875rem; border-radius: 1.25rem 1.25rem 1.25rem 1.25rem; border-top-right-radius: .375rem;
+  background: var(--highlight); color: var(--highlight-foreground);
+  font-size: .9375rem; line-height: 1.625; white-space: pre-wrap; overflow-wrap: anywhere;
+}
+.bubble img { display: block; max-width: min(16rem, 100%); max-height: 16rem; margin: .125rem 0 .375rem; border-radius: .75rem; }
+.bubble .attached { display: flex; align-items: center; margin-bottom: .25rem; gap: .35rem; font-size: .8125rem; font-weight: 500; }
+.bubble .attached .icon { width: 1rem; height: 1rem; }
+.note {
+  margin: 0 -.375rem .375rem; padding: .5rem .625rem; border-radius: .75rem;
+  background: color-mix(in oklab, var(--background) 70%, transparent);
+  color: var(--foreground); font-size: .8125rem; line-height: 1.5;
+}
+.note:last-child { margin-bottom: -.125rem; margin-top: .375rem; }
+.note b { display: block; color: var(--muted-foreground); font-size: .6875rem; font-weight: 600; }
+.note[data-fresh] { animation: note-reveal 520ms var(--ease-emphasized); }
+.stamp { height: 1.5rem; display: flex; align-items: center; color: var(--receipt); font-size: .6875rem; font-variant-numeric: tabular-nums; }
+
+.agent { margin-top: .75rem; animation: arrive-left 420ms var(--ease-responsive) both; transform-origin: bottom left; }
+.say { max-width: 70ch; font-size: .9375rem; line-height: 1.625; white-space: pre-wrap; overflow-wrap: anywhere; }
+.say + .say { margin-top: .375rem; }
+.failed { color: var(--destructive-text); }
+.pills { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .5rem; }
+.pill { max-width: 100%; overflow: hidden; padding: .1rem .5rem; border-radius: 999px; background: var(--surface-hover); color: var(--muted-foreground); font-family: var(--mono); font-size: .7rem; text-overflow: ellipsis; white-space: nowrap; }
+.meta { display: flex; flex-wrap: wrap; align-items: center; gap: .125rem .25rem; min-height: 1.75rem; margin-top: .25rem; }
+.meta .stamp { margin-right: .25rem; }
+.tool {
+  display: inline-flex; align-items: center; gap: .3rem; height: 1.75rem; padding: 0 .5rem; border-radius: .5rem;
+  color: var(--muted-foreground); font-size: .6875rem; font-weight: 500; transition: background 150ms, color 150ms, opacity 150ms;
+}
+.tool:hover { background: var(--surface-hover); color: var(--foreground); }
+.tool .icon { width: .875rem; height: .875rem; }
+.copy { width: 1.75rem; padding: 0; justify-content: center; opacity: 0; }
+.agent:hover .copy, .copy:focus-visible { opacity: 1; }
+@media (hover: none) { .copy { opacity: 1; } }
+.drawer { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 160ms var(--ease-responsive); }
+.drawer[data-open="true"] { grid-template-rows: 1fr; }
+.drawer > div { min-height: 0; overflow: hidden; }
+.drawer[data-open="true"] .agent-trace { margin-top: .25rem; }
+.drawer:not([data-open="true"]) > div { visibility: hidden; }
+
+/* Working */
+.working { margin-top: .75rem; }
+.working[data-out] { animation: collapse-out 180ms ease-in forwards; }
+.status { display: flex; align-items: center; gap: .6rem; }
+.typing { display: inline-flex; gap: .25rem; padding: 10px 14px; border-radius: 18px 18px 18px 6px; background: var(--surface-hover); }
+.typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--muted-foreground); animation: dot 1.2s infinite; }
+.typing i:nth-child(2) { animation-delay: .15s; }
+.typing i:nth-child(3) { animation-delay: .3s; }
+.shimmer {
+  color: var(--muted-foreground); font-size: .75rem;
+  -webkit-mask-image: linear-gradient(100deg, #000 38%, rgb(0 0 0 / .35) 50%, #000 62%);
+  mask-image: linear-gradient(100deg, #000 38%, rgb(0 0 0 / .35) 50%, #000 62%);
+  -webkit-mask-size: 300% 100%; mask-size: 300% 100%;
+  animation: shimmer 2.4s cubic-bezier(.45, 0, .55, 1) infinite;
+}
+.working .agent-trace { margin-top: .5rem; }
+
+/* Trace */
+.agent-trace { max-width: 36rem; padding: .5rem; border: 1px solid var(--border); border-radius: .75rem; }
+.trace-head { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; padding: .1rem .4rem .35rem; }
+.trace-head strong { font-size: .78rem; font-weight: 600; }
+.trace-head span { color: var(--muted-foreground); font-size: .72rem; font-variant-numeric: tabular-nums; }
+.kids { display: grid; gap: .05rem; min-width: 0; }
+.node { min-width: 0; }
+.node.fresh { animation: live-enter 240ms var(--ease-emphasized) both; }
+.row {
+  display: flex; align-items: center; gap: .45rem; width: 100%; min-width: 0; min-height: 1.75rem; padding: .3rem .4rem;
+  border-radius: .5rem; font-size: .8rem; text-align: left;
+}
+button.row { transition: background 150ms; }
+button.row:hover { background: var(--surface-hover); }
+.row .icon { flex: none; width: .95rem; height: .95rem; color: var(--muted-foreground); }
+.row .type { flex: none; color: var(--muted-foreground); font-size: .72rem; }
+.row .title { flex: 1 1 auto; min-width: 0; overflow: hidden; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.node[data-kind="step"] > .row .title { font-family: var(--mono); font-size: .75rem; font-weight: 400; }
+.row .time { flex: none; color: var(--muted-foreground); font-size: .72rem; font-variant-numeric: tabular-nums; }
+.row .bad { flex: none; color: var(--destructive-text); font-size: .72rem; font-weight: 600; }
+.row .bad[data-cut] { color: var(--muted-foreground); font-weight: 500; }
+.row .chev { flex: none; width: .85rem; height: .85rem; transition: transform 150ms var(--ease-responsive); }
+.node[data-open="true"] > .row .chev { transform: rotate(90deg); }
+.mark { flex: none; position: relative; width: .8rem; height: .8rem; }
+.mark::before { content: ""; position: absolute; inset: 0; border: 2px solid var(--border-strong); border-top-color: var(--primary-text); border-radius: 50%; animation: spin .8s linear infinite; }
+.mark[data-done]::before { display: none; }
+.mark svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: var(--success-text); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 24; stroke-dashoffset: 24; }
+.mark[data-done] svg { animation: draw 260ms var(--ease-emphasized) forwards, fade 1100ms 700ms forwards; }
+.body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 160ms var(--ease-responsive); }
+.node[data-open="true"] > .body { grid-template-rows: 1fr; }
+.body > div { min-height: 0; overflow: hidden; }
+.node:not([data-open="true"]) > .body > div { visibility: hidden; }
+.inner { display: grid; gap: .4rem; margin: .1rem 0 .35rem .85rem; padding-left: .75rem; border-left: 1px solid var(--border); min-width: 0; }
+.trace-text { margin: 0; color: var(--muted-foreground); font-size: .78rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; }
+.caption { margin: 0 0 .15rem; color: var(--muted-foreground); font-size: .6875rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+.trace-pre { margin: 0; max-height: 16rem; overflow: auto; padding: .5rem .6rem; border-radius: .5rem; background: var(--surface-hover); font-family: var(--mono); font-size: .72rem; line-height: 1.5; white-space: pre-wrap; overflow-wrap: anywhere; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.body .pills { margin-top: 0; }
+
+/* Composer */
+.bar { position: absolute; left: 0; right: 0; bottom: 0; z-index: 40; padding: 0 var(--gutter) calc(1.25rem + env(safe-area-inset-bottom)); pointer-events: none; }
+.bar::before { content: ""; position: absolute; inset: -.75rem 0 0; z-index: -1; background: linear-gradient(to top, var(--background) 70%, transparent); }
+.bar-in { pointer-events: auto; position: relative; width: 100%; max-width: var(--measure); margin: 0 auto; }
+.down {
+  position: absolute; left: 50%; top: -3rem; width: 2.25rem; height: 2.25rem; margin-left: -1.125rem;
+  display: grid; place-items: center; border: 1px solid var(--border); border-radius: 50%;
+  background: var(--surface); box-shadow: var(--shadow-card); color: var(--muted-foreground);
+  opacity: 0; pointer-events: none; transform: translateY(.25rem); transition: opacity 150ms, transform 200ms var(--ease-responsive);
+}
+.down[data-show="true"] { opacity: 1; pointer-events: auto; transform: none; }
+.problem { margin: 0 .75rem .5rem; color: var(--destructive-text); font-size: .8125rem; line-height: 1.4; }
+.problem:empty { display: none; }
+.composer {
+  border: 1px solid var(--border); border-radius: 1.5rem; padding: .375rem .75rem; background: var(--surface);
+  box-shadow: var(--shadow-composer);
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.composer:focus-within { border-color: color-mix(in oklab, var(--primary) 40%, transparent); box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 12%, transparent); }
+.chip { display: flex; align-items: center; gap: .5rem; padding: .25rem .25rem .375rem; color: var(--muted-foreground); font-size: .8125rem; }
+.chip img { width: 2.5rem; height: 2.5rem; object-fit: cover; border-radius: .5rem; }
+.chip span { flex: 1; }
+.line { display: flex; align-items: flex-end; gap: .125rem; }
+.round {
+  flex: none; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  color: var(--muted-foreground); transition: background 150ms, color 150ms, transform 120ms var(--ease-responsive);
+}
+.round:hover:not(:disabled) { background: var(--surface-hover); color: var(--foreground); }
+.round:active:not(:disabled) { transform: scale(.95); }
+.round:disabled { opacity: .45; }
+.round.small { width: 2rem; height: 2rem; }
+.round.small .icon { width: 1rem; height: 1rem; }
+textarea {
+  flex: 1; min-width: 0; max-height: 9rem; padding: .625rem .375rem; border: 0; outline: 0; resize: none;
+  background: transparent; font-size: 1rem; line-height: 1.5rem; caret-color: var(--primary-text);
+}
+textarea:focus-visible { outline: 0; }
+textarea::placeholder { color: var(--muted-foreground); opacity: 1; }
+.send { background: var(--primary); color: var(--primary-foreground); }
+.send:hover:not(:disabled) { background: var(--primary-hover); color: var(--primary-foreground); }
+.send:disabled { background: var(--disabled); color: var(--disabled-foreground); opacity: 1; }
+.rec { flex: 1; min-width: 0; display: flex; align-items: center; gap: .5rem; height: 2.75rem; padding: 0 .375rem; font-size: .875rem; font-variant-numeric: tabular-nums; }
+.rec i { width: .55rem; height: .55rem; border-radius: 50%; background: var(--destructive); animation: pulse 1.2s ease-in-out infinite; }
+.rec span { color: var(--muted-foreground); }
+[hidden] { display: none !important; }
+
+/* Cards */
+.dock { position: absolute; right: var(--edge); bottom: var(--above); z-index: 30; display: flex; gap: .5rem; }
+.chat-bubble {
+  position: relative; display: grid; place-items: center; width: 3.25rem; height: 3.25rem; border: 1px solid var(--border); border-radius: 50%;
+  background: var(--surface); box-shadow: var(--shadow-float); color: var(--primary-text);
+  animation: pop 340ms var(--ease-responsive) both; transition: background 150ms, transform 120ms var(--ease-responsive);
+}
+.chat-bubble:hover { background: var(--surface-hover); }
+.chat-bubble:active { transform: scale(.95); }
+.chat-bubble[aria-expanded="true"] { border-color: var(--border-strong); background: var(--surface-hover); }
+.chat-bubble .count { position: absolute; top: -.2rem; right: -.2rem; min-width: 1.15rem; height: 1.15rem; padding: 0 .25rem; border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: .6875rem; font-weight: 700; line-height: 1.15rem; text-align: center; font-variant-numeric: tabular-nums; }
+.chat-bubble .icon { stroke-width: 1.9; }
+.scrim { position: absolute; inset: -3.5rem 0 0; z-index: 45; background: rgb(31 31 31 / .35); opacity: 0; pointer-events: none; transition: opacity 200ms; }
+.card {
+  position: absolute; z-index: 35; right: var(--edge); bottom: calc(var(--above) + 4rem);
+  display: flex; flex-direction: column; width: min(22rem, calc(100% - 2 * var(--edge))); max-height: min(34rem, calc(100% - var(--above) - 5rem));
+  overflow: hidden; border: 1px solid var(--border); border-radius: 1.25rem; background: var(--surface); box-shadow: var(--shadow-float);
+  transform-origin: calc(100% - 1.75rem) calc(100% + 2.5rem); transform: scale(.6); opacity: 0; visibility: hidden; pointer-events: none;
+  transition: transform 340ms var(--ease-responsive), opacity 200ms ease-out, visibility 0s 340ms;
+}
+.card[data-open="true"] { transform: none; opacity: 1; visibility: visible; pointer-events: auto; transition: transform 340ms var(--ease-responsive), opacity 200ms ease-out; }
+.grab { display: none; }
+.tabs { display: flex; gap: .25rem; padding: .5rem .6rem 0; }
+.tab { position: relative; height: 1.875rem; padding: 0 .7rem; border-radius: 999px; color: var(--muted-foreground); font-size: .75rem; font-weight: 600; transition: background 150ms, color 150ms; }
+.tab:hover { background: var(--surface-hover); }
+.tab[aria-selected="true"] { background: var(--surface-active); color: var(--foreground); }
+.tab[data-unseen]::after { content: ""; position: absolute; top: .3rem; right: .3rem; width: .4rem; height: .4rem; border-radius: 50%; background: var(--primary-text); }
+.card-head { display: flex; align-items: center; gap: .7rem; padding: .85rem .6rem .85rem .9rem; border-bottom: 1px solid var(--border); }
+.card-icon { flex: none; display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border-radius: 50%; background: color-mix(in oklab, var(--primary) 12%, transparent); color: var(--primary-text); }
+.card-icon .icon { stroke-width: 1.9; }
+.card-copy { flex: 1; min-width: 0; display: grid; gap: .1rem; }
+.card-title { display: flex; flex-wrap: wrap; align-items: center; gap: .2rem .45rem; min-width: 0; }
+.card-title strong { font-size: .9375rem; font-weight: 650; letter-spacing: -.015em; white-space: nowrap; }
+.tone { padding: .15rem .5rem; border-radius: 999px; background: var(--surface-active); color: var(--muted-foreground); font-size: .6875rem; font-weight: 600; white-space: nowrap; }
+.tone[data-tone="warning"] { background: color-mix(in oklab, var(--warning) 16%, transparent); color: var(--warning-text); }
+.tone[data-tone="success"] { background: color-mix(in oklab, var(--success) 14%, transparent); color: var(--success-text); }
+.card-summary { overflow: hidden; color: var(--muted-foreground); font-size: .75rem; font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }
+.card-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+.swap { animation: swap-in 260ms var(--ease-emphasized); }
+.empty { margin: 0; padding: 1.25rem 1rem; color: var(--muted-foreground); font-size: .875rem; line-height: 1.45; text-align: center; }
+.lines { margin: 0; padding: 0 1rem; list-style: none; }
+.lines li { display: flex; align-items: center; gap: .75rem; padding: .625rem 0; }
+.lines li + li { border-top: 1px solid var(--border); }
+.qty { flex: none; display: grid; place-items: center; min-width: 2rem; height: 2rem; padding: 0 .375rem; border-radius: .5rem; background: var(--surface-active); font-size: .875rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.what { flex: 1; min-width: 0; }
+.what b { display: block; overflow: hidden; font-size: .875rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+.what span { display: block; overflow: hidden; color: var(--muted-foreground); font-size: .75rem; font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }
+.sub { flex: none; font-size: .875rem; font-variant-numeric: tabular-nums; }
+.hint { margin: 0; padding: .75rem 1rem; border-top: 1px solid var(--border); color: var(--warning-text); font-size: .75rem; font-weight: 500; line-height: 1.4; }
+.fields { margin: 0; padding: 0 1rem .25rem; }
+.fields > div { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: .125rem 1rem; min-height: 2.5rem; padding: .5rem 0; font-size: .875rem; }
+.fields > div + div { border-top: 1px solid var(--border); }
+.fields dt { min-width: 0; color: var(--muted-foreground); overflow-wrap: anywhere; }
+.fields dt small { margin-left: .25rem; font-size: .75rem; }
+.fields dd { min-width: 0; margin: 0 0 0 auto; padding: 0 .25rem; border-radius: .25rem; font-weight: 500; text-align: right; overflow-wrap: anywhere; }
+.fields dd.pending { padding-top: .125rem; color: var(--warning-text); font-size: .75rem; }
+.blank { margin: 0; padding: 0 1rem .75rem; color: var(--muted-foreground); font-size: .75rem; }
+.flash { animation: flash 900ms var(--ease-emphasized); }
+.peek {
+  position: absolute; right: calc(100% + .6rem); top: 50%; display: grid; gap: .15rem; width: max-content; max-width: min(17rem, calc(100vw - 10rem));
+  margin: 0; padding: .5rem .85rem; border: 1px solid var(--border); border-radius: .75rem; background: var(--surface); box-shadow: var(--shadow-float);
+  line-height: 1.3; opacity: 0; pointer-events: none; transform: translate(.75rem, -50%);
+  transition: opacity 200ms ease-out, transform 320ms var(--ease-responsive);
+}
+.peek[data-show="true"] { opacity: 1; transform: translate(0, -50%); }
+.peek-head { display: flex; align-items: center; gap: .45rem; font-size: .8125rem; }
+.peek-head strong { font-weight: 650; }
+.peek-summary { overflow: hidden; color: var(--muted-foreground); font-size: .75rem; font-variant-numeric: tabular-nums; text-overflow: ellipsis; white-space: nowrap; }
+
+@media (min-width: 640px) {
+  .me { max-width: 70%; }
+}
+@media (min-width: 768px) {
+  .top { padding-inline: var(--gutter); }
+  :root { --gutter: 2rem; }
+  .column { padding-block: 2rem; }
+}
+@media (min-width: 1024px) {
+  :root { --edge: 1.75rem; }
+}
+@media (max-width: 1023.98px) {
+  .card {
+    position: fixed; z-index: 50; left: 0; right: 0; bottom: 0; width: auto; max-height: 82dvh;
+    border-width: 1px 0 0; border-radius: 1.25rem 1.25rem 0 0; padding-bottom: env(safe-area-inset-bottom);
+    transform: translateY(calc(100% + 1rem)); opacity: 1;
   }
-  * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; }
-  body {
-    display: flex; flex-direction: column; height: 100dvh; background: var(--paper); color: var(--ink);
-    font: 16px/1.45 ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  }
-  header { padding: 14px 16px 10px; border-bottom: 1px solid var(--line); }
-  header div, #log, form { width: 100%; max-width: 720px; margin: 0 auto; }
-  h1 { margin: 0; font-size: 18px; letter-spacing: -.01em; }
-  header p { margin: 2px 0 0; color: var(--soft); font-size: 14px; }
-  main { flex: 1; overflow-y: auto; padding: 16px; }
-  #log { display: flex; flex-direction: column; gap: 10px; }
-  .msg { max-width: 86%; padding: 9px 13px; border-radius: 14px; white-space: pre-wrap; overflow-wrap: anywhere; }
-  .me { align-self: flex-end; background: var(--leaf); color: var(--leaf-ink); border-bottom-right-radius: 4px; }
-  .bot { align-self: flex-start; background: var(--card); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
-  .me img { display: block; max-width: 220px; max-height: 220px; border-radius: 8px; margin-bottom: 6px; }
-  .note { align-self: flex-start; max-width: 86%; color: var(--soft); font-size: 13px; }
-  .note.right { align-self: flex-end; text-align: right; }
-  .note.error { color: var(--warn); }
-  .starters { display: flex; flex-wrap: wrap; gap: 8px; }
-  .starters button { font-size: 14px; min-height: 36px; }
-  footer { padding: 10px 16px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); }
-  #attached { display: none; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--soft); font-size: 14px; }
-  #attached img { height: 44px; border-radius: 6px; }
-  form { display: flex; gap: 8px; align-items: flex-end; }
-  textarea {
-    flex: 1; min-width: 0; min-height: 44px; max-height: 130px; resize: none; padding: 10px 12px;
-    font: inherit; color: inherit; background: var(--card); border: 1px solid var(--line); border-radius: 12px;
-  }
-  button, label.btn {
-    display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px;
-    padding: 0 12px; font: inherit; color: var(--ink); background: var(--card);
-    border: 1px solid var(--line); border-radius: 12px; cursor: pointer;
-  }
-  button:disabled { opacity: .5; cursor: default; }
-  button.send { background: var(--leaf); color: var(--leaf-ink); border-color: var(--leaf); }
-  button.on { background: var(--warn); color: var(--leaf-ink); border-color: var(--warn); }
-  :focus-visible { outline: 2px solid var(--leaf); outline-offset: 2px; }
-  input[type=file] { position: absolute; width: 1px; height: 1px; opacity: 0; }
+  .card[data-open="true"] { transform: translateY(var(--drag, 0)); }
+  .card[data-dragging="true"] { transition: none; }
+  .grab { display: block; flex: none; padding: .5rem 0 .125rem; touch-action: none; }
+  .grab i { display: block; width: 2.25rem; height: .25rem; margin: 0 auto; border-radius: 999px; background: var(--border-strong); }
+  .scrim[data-open="true"] { position: fixed; inset: 0; opacity: 1; pointer-events: auto; }
+  .brand p { display: none; }
+}
+
+@media (max-width: 639.98px) {
+  .meta .stamp { flex-basis: 100%; margin-right: 0; }
+}
+
+@media (pointer: coarse) {
+  .tool, .tab, .new { height: 2.75rem; }
+  .copy { width: 2.75rem; }
+  .round.small { width: 2.75rem; height: 2.75rem; }
+  .down { width: 2.75rem; height: 2.75rem; margin-left: -1.375rem; top: -3.5rem; }
+  .starter { min-height: 2.75rem; }
+  button.row { min-height: 2.75rem; }
+}
+
+@keyframes arrive { from { opacity: 0; transform: translateY(8px) scale(.97); } }
+@keyframes arrive-left { from { opacity: 0; transform: translateY(8px) scale(.985); } }
+@keyframes note-reveal { from { clip-path: inset(0 100% 0 0 round .75rem); } to { clip-path: inset(0 0 0 0 round .75rem); } }
+@keyframes dot { 0%, 60%, 100% { opacity: .35; transform: none; } 30% { opacity: 1; transform: translateY(-2px); } }
+@keyframes shimmer { 0% { -webkit-mask-position: 100% 0; mask-position: 100% 0; } 70%, 100% { -webkit-mask-position: 0 0; mask-position: 0 0; } }
+@keyframes live-enter { from { opacity: 0; transform: translateY(4px); filter: blur(2px); } }
+@keyframes collapse-out { to { opacity: 0; transform: translateY(-4px); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fade { to { opacity: 0; } }
+@keyframes pulse { 50% { opacity: .35; } }
+@keyframes pop { from { opacity: 0; transform: scale(.6); } }
+@keyframes swap-in { from { opacity: 0; transform: translateY(.35rem); } }
+@keyframes flash { from { background-color: color-mix(in oklab, var(--primary) 22%, transparent); } to { background-color: transparent; } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 1ms !important; animation-iteration-count: 1 !important; animation-delay: 0ms !important; transition-duration: 1ms !important; }
+  .shimmer { -webkit-mask-image: none; mask-image: none; }
+  .mark[data-done] svg { animation: none; stroke-dashoffset: 0; }
+}
 </style>
 </head>
 <body>
-<header><div>
-  <h1>Open Market</h1>
-  <p>A farm-input advisor. Ask, send a photo of the pest, or leave a voice note.</p>
-</div></header>
-<main id="scroll"><div id="log" aria-live="polite"></div></main>
-<footer>
-  <div id="attached" style="max-width:720px;margin:0 auto 8px">
-    <img id="thumb" alt="Photo to send"><span id="attachedName"></span>
-    <button type="button" id="drop" aria-label="Remove attachment">Remove</button>
+<header class="top">
+  <div class="brand">
+    <h1>Open Market</h1>
+    <p>A farm-input advisor. Ask, send a photo of the pest, or leave a voice note.</p>
   </div>
-  <form id="form">
-    <label class="btn" title="Send a photo">Photo
-      <input id="photo" type="file" accept="image/*" aria-label="Send a photo">
-    </label>
-    <button type="button" id="mic" title="Record a voice note">Voice</button>
-    <textarea id="text" rows="1" maxlength="2000" placeholder="Write your question" aria-label="Your message"></textarea>
-    <button class="send" id="send">Send</button>
-  </form>
-</footer>
+  <button class="new" id="new" type="button">
+    <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>New chat
+  </button>
+</header>
+
+<main class="host" id="host">
+  <div class="thread" id="thread" role="log" aria-live="polite" aria-label="Conversation">
+    <div class="column" id="column"></div>
+  </div>
+
+  <div class="dock" id="dock" role="group" aria-label="Order and billing details"></div>
+  <p class="sr-only" id="told" role="status"></p>
+  <div class="scrim" id="scrim" aria-hidden="true"></div>
+  <section class="card" id="card" aria-labelledby="card-title" tabindex="-1" data-open="false"></section>
+
+  <div class="bar" id="bar">
+    <div class="bar-in">
+      <button class="down" id="down" type="button" data-show="false" aria-label="Go to the latest message">
+        <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M6 13l6 6 6-6"/></svg>
+      </button>
+      <p class="problem" id="problem" role="alert"></p>
+      <form class="composer" id="composer">
+        <div class="chip" id="chip" hidden>
+          <span>Photo ready</span>
+          <button class="round small" id="chip-x" type="button" aria-label="Remove the photo">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg>
+          </button>
+        </div>
+        <div class="line">
+          <button class="round" id="attach" type="button" aria-label="Attach a photo">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></svg>
+          </button>
+          <input id="photo" type="file" accept="image/*" hidden>
+          <textarea id="text" rows="1" maxlength="2000" placeholder="Write to the advisor" aria-label="Your message"></textarea>
+          <div class="rec" id="rec" hidden><i></i>Recording <span id="rec-time">0:00</span></div>
+          <button class="round" id="mic" type="button" aria-label="Record a voice note">
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+          </button>
+          <button class="round send" id="send" type="submit" aria-label="Send" disabled>
+            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19V5M6 11l6-6 6 6"/></svg>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>
+
 <script>
-const $ = id => document.getElementById(id);
-const log = $("log"), scroll = $("scroll");
-const MAX_SIDE = 1280, MAX_SECONDS = 60, RATE = 16000;
+"use strict";
+const MAX_SIDE = 1280, MAX_SECONDS = 60, RATE = 16000, PLAN_GROUP_MIN = 3, STICK = 96;
+const GREETING = "Hi. Tell me what is happening in your crop, or send me a photo of it.";
 const STARTERS = [
   "Worms are eating my corn leaves, what do you have?",
   "I want to buy fertilizer for tomato",
   "Which products do you sell for whitefly?",
 ];
+const ICONS = {
+  judge: '<path d="M12 3v18M5 21h14M3 7h18M6 7l-3 7a3 3 0 0 0 6 0zM18 7l-3 7a3 3 0 0 0 6 0z"/>',
+  searcher: '<rect x="4" y="8" width="16" height="12" rx="2"/><path d="M12 8V4M9 13v1M15 13v1"/>',
+  step: '<path d="m5 8 4 4-4 4M12 16h7"/>',
+  plan: '<path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/>',
+  writer: '<path d="M12 20h9M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/>',
+  fail: '<circle cx="12" cy="12" r="9"/><path d="m15 9-6 6M9 9l6 6"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>',
+  photo: '<rect x="3" y="5" width="18" height="14" rx="3"/><circle cx="9" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/>',
+  voice: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/>',
+  chevron: '<path d="m9 6 6 6-6 6"/>',
+  copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/>',
+  check: '<path d="m5 12 5 5 9-10"/>',
+  retry: '<path d="M21 12a9 9 0 1 1-2.64-6.36L21 8"/><path d="M21 3v5h-5"/>',
+  close: '<path d="M7 7l10 10M17 7 7 17"/>',
+  cart: '<path d="M3 4h1.6c.5 0 .9.3 1 .8L6 7m0 0 1.3 6.4c.1.6.6 1 1.2 1h8.2c.6 0 1.1-.4 1.2-1L19.5 7H6Zm3 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2Zm8 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z"/>',
+  form: '<rect x="5" y="4" width="14" height="17" rx="3"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/>',
+};
+const KINDS = {
+  read: ["info", "Reading"], judge: ["judge", "Judge"], searcher: ["searcher", "Searcher"], step: ["step", "REPL"],
+  plan: ["plan", "Plan"], effect: ["plan", "Effect"], writer: ["writer", "Writer"], check: ["plan", "Host"], fail: ["fail", "Failed"],
+};
 
-let session;
+const $ = id => document.getElementById(id);
+const el = (tag, cls, text) => {
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+};
+const icon = (name, cls = "icon") => {
+  const n = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  n.setAttribute("viewBox", "0 0 24 24");
+  n.setAttribute("class", cls);
+  n.setAttribute("aria-hidden", "true");
+  n.innerHTML = ICONS[name];
+  return n;
+};
+const store = {
+  get(key) { try { return JSON.parse(localStorage.getItem(key)); } catch { return null; } },
+  set(key, value) { try { localStorage.setItem(key, JSON.stringify(value)); return true; } catch { return false; } },
+};
+const clock = at => new Date(at).toLocaleTimeString("en", { hour: "numeric", minute: "2-digit" });
+const sentence = s => s ? s[0].toUpperCase() + s.slice(1).replace(/\.?$/, ".") : s;
+
+/* The session and what the page keeps of it. The server forgets on restart; the page shows what it saw. */
+function newSession() {
+  const id = crypto.randomUUID();
+  try { localStorage.setItem("session", id); } catch {}
+  return id;
+}
+let session = null;
 try { session = localStorage.getItem("session"); } catch {}
-if (!session) {
-  session = crypto.randomUUID();
-  try { localStorage.setItem("session", session); } catch {}
+if (!session) session = newSession();
+
+let saved = store.get("thread");
+if (!saved || saved.session !== session) saved = { session, turns: [], cart: null, form: null };
+let turns = saved.turns;
+let cards = { cart: saved.cart, form: saved.form };
+
+function save() {
+  const whole = { session, turns, cart: cards.cart, form: cards.form };
+  if (store.set("thread", whole)) return;
+  store.set("thread", { ...whole, turns: turns.map(t => ({ ...t, trace: [] })) });
 }
 
-let image = "", audio = "", recorder = null, stopTimer = 0;
-
-function add(cls, text) {
-  const el = document.createElement("div");
-  el.className = cls;
-  if (text) el.textContent = text;
-  log.append(el);
-  scroll.scrollTop = scroll.scrollHeight;
-  return el;
+/* Scroll: the thread follows the turn unless the visitor went up to read. */
+const thread = $("thread"), column = $("column");
+const nearEnd = () => thread.scrollHeight - thread.scrollTop - thread.clientHeight < STICK;
+let stuck = true;
+function follow(force) {
+  if (force) stuck = true;
+  if (stuck) thread.scrollTop = thread.scrollHeight;
 }
+const showDown = () => { $("down").dataset.show = String(!nearEnd()); };
+thread.addEventListener("scroll", () => { stuck = nearEnd(); showDown(); }, { passive: true });
+new ResizeObserver(() => { follow(); showDown(); }).observe(column);
+$("down").onclick = () => thread.scrollTo({
+  top: thread.scrollHeight,
+  behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+});
 
-function starters() {
-  const row = add("starters");
-  for (const s of STARTERS) {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.textContent = s;
-    b.onclick = () => { row.remove(); $("text").value = s; send(); };
-    row.append(b);
+/* The trace: one node per step, updated in place as its events arrive. */
+class Trace {
+  constructor(nodes = []) {
+    this.nodes = new Map();
+    this.rows = new Map();
+    this.root = el("section", "agent-trace");
+    this.root.setAttribute("aria-label", "Agent trace");
+    this.root.setAttribute("aria-live", "off");
+    const head = el("div", "trace-head");
+    head.append(el("strong", "", "Agent trace"));
+    this.count = el("span");
+    head.append(this.count);
+    this.kids = el("div", "kids");
+    this.root.append(head, this.kids);
+    nodes.forEach(n => this.upsert(n.status === "running" ? { ...n, status: "cut" } : n, false));
+    this.settle();
+  }
+
+  upsert(node, live = true) {
+    const known = this.nodes.get(node.id);
+    this.nodes.set(node.id, { since: known?.since ?? Date.now(), ...node });
+    const row = this.rows.get(node.id) ?? this.mount(node, live);
+    this.paint(row, this.nodes.get(node.id), live);
+    if (node.status !== "running" && live) this.group(row.kids);
+    this.count.textContent = this.tally();
+  }
+
+  tally() {
+    const n = this.nodes.size;
+    return n === 1 ? "1 step" : `${n} steps`;
+  }
+
+  mount(node, live) {
+    const [iconName, type] = KINDS[node.kind] ?? ["info", node.kind];
+    const shell = el("div", live ? "node fresh" : "node");
+    shell.dataset.kind = node.kind;
+    const head = el("div", "row");
+    const glyph = icon(node.who && ICONS[node.who] ? node.who : iconName);
+    const title = el("span", "title", node.title);
+    title.title = node.title;
+    const time = el("span", "time");
+    const bad = el("span", "bad", "failed");
+    bad.hidden = true;
+    const mark = el("span", "mark");
+    mark.append(icon("check", ""));
+    mark.firstChild.removeAttribute("class");
+    head.append(glyph, el("span", "type", type), title, time, bad, mark);
+    const body = el("div", "body");
+    const clip = el("div");
+    const inner = el("div", "inner");
+    const details = el("div");
+    details.style.display = "contents";
+    const kids = el("div", "kids");
+    inner.append(details, kids);
+    clip.append(inner);
+    body.append(clip);
+    shell.append(head, body);
+    const parent = this.rows.get(node.parent);
+    (parent ? parent.kids : this.kids).append(shell);
+    if (parent) this.refresh(parent);
+    const row = { shell, head, time, bad, mark, details, kids, node };
+    this.rows.set(node.id, row);
+    return row;
+  }
+
+  paint(row, node, live) {
+    const running = node.status === "running";
+    row.node = node;
+    row.time.dataset.since = running ? node.since : "";
+    row.time.textContent = running ? "" : node.seconds >= 0.1 ? `${node.seconds.toFixed(1)} s` : "";
+    row.bad.hidden = running || node.status === "done";
+    row.bad.textContent = node.status === "cut" ? "cut off" : "failed";
+    row.bad.toggleAttribute("data-cut", node.status === "cut");
+    if (running) row.mark.hidden = false;
+    else if (live && !row.mark.dataset.done) { row.mark.dataset.done = "true"; if (node.status !== "done") row.mark.hidden = true; }
+    else if (!live) row.mark.hidden = true;
+    row.details.replaceChildren(...this.details(node));
+    if (node.status === "error") this.reveal(row);
+    this.refresh(row);
+  }
+
+  reveal(row) {
+    for (let at = row; at; at = this.rows.get(at.node.parent)) {
+      at.pinned = true;
+      this.refresh(at);
+    }
+  }
+
+  details(node) {
+    const out = [];
+    if (node.text) out.push(el("p", "trace-text", node.text));
+    if (node.sources?.length) {
+      const pills = el("div", "pills");
+      node.sources.forEach(s => pills.append(el("span", "pill", s)));
+      out.push(pills);
+    }
+    for (const [label, value] of [["Code", node.code], ["Output", node.output]]) {
+      if (!value) continue;
+      const block = el("div");
+      block.append(el("p", "caption", label), el("pre", "trace-pre", value));
+      out.push(block);
+    }
+    return out;
+  }
+
+  openable(row) {
+    return row.details.childElementCount > 0 || row.kids.childElementCount > 0;
+  }
+
+  refresh(row) {
+    const can = this.openable(row);
+    const running = row.node.status === "running";
+    if (can && row.head.tagName !== "BUTTON") {
+      const button = el("button", "row");
+      button.type = "button";
+      button.append(...row.head.childNodes, icon("chevron", "icon chev"));
+      button.onclick = () => { row.toggled = row.shell.dataset.open !== "true"; this.refresh(row); };
+      row.head.replaceWith(button);
+      row.head = button;
+    }
+    const open = can && (row.toggled ?? (row.pinned || (running && row.kids.childElementCount > 0)));
+    row.shell.dataset.open = String(!!open);
+    if (can) row.head.setAttribute("aria-expanded", String(!!open));
+  }
+
+  group(kids) {
+    const run = [];
+    const flush = () => {
+      if (run.length >= PLAN_GROUP_MIN) {
+        const shell = el("div", "node");
+        shell.dataset.open = "false";
+        const head = el("button", "row");
+        head.type = "button";
+        head.setAttribute("aria-expanded", "false");
+        head.append(icon("plan"), el("span", "type", "Plan"), el("span", "title", `${run.length} plan moves`), icon("chevron", "icon chev"));
+        const body = el("div", "body"), clip = el("div"), inner = el("div", "inner"), list = el("div", "kids");
+        run[0].before(shell);
+        list.append(...run);
+        inner.append(list); clip.append(inner); body.append(clip); shell.append(head, body);
+        head.onclick = () => {
+          const open = shell.dataset.open !== "true";
+          shell.dataset.open = String(open);
+          head.setAttribute("aria-expanded", String(open));
+        };
+      }
+      run.length = 0;
+    };
+    for (const child of [...kids.children]) {
+      if (child.dataset.kind === "plan") run.push(child);
+      else flush();
+    }
+    flush();
+  }
+
+  /* A step the stream never closed: the page stopped seeing it, which does not mean it failed. */
+  cut() {
+    this.list().filter(n => n.status === "running").forEach(n => this.upsert({ ...n, status: "cut" }));
+  }
+
+  settle() {
+    this.rows.forEach(row => { this.group(row.kids); this.refresh(row); });
+    this.count.textContent = this.tally();
+  }
+
+  list() {
+    return [...this.nodes.values()];
   }
 }
 
-function attached(label, src) {
-  $("attached").style.display = label ? "flex" : "none";
-  $("attachedName").textContent = label;
-  $("thumb").style.display = src ? "block" : "none";
-  if (src) $("thumb").src = src;
+setInterval(() => {
+  document.querySelectorAll(".time[data-since]").forEach(n => {
+    if (n.dataset.since) n.textContent = `${((Date.now() - Number(n.dataset.since)) / 1000).toFixed(0)} s`;
+  });
+}, 500);
+
+/* Messages */
+function linked(text) {
+  const out = document.createDocumentFragment();
+  text.split(/(https?:\/\/[^\s)]+)/g).forEach((part, i) => {
+    if (i % 2 === 0) { out.append(part); return; }
+    const a = el("a", "", part);
+    a.href = part; a.target = "_blank"; a.rel = "noopener noreferrer";
+    out.append(a);
+  });
+  return out;
 }
 
-function clearAttachments() { image = ""; audio = ""; $("photo").value = ""; attached(""); }
+function note(label, text, fresh) {
+  const n = el("div", "note");
+  if (fresh) n.dataset.fresh = "true";
+  n.append(el("b", "", label), text);
+  return n;
+}
 
-/* A phone photo is 5 MB; the model reads a pest as well at 1280 px. */
+function renderMe(turn, photo) {
+  const me = el("div", "me");
+  const bubble = el("div", "bubble");
+  if (photo) {
+    const img = el("img");
+    img.src = photo; img.alt = "The photo you sent";
+    bubble.append(img);
+  } else if (turn.hasPhoto) {
+    const tag = el("span", "attached");
+    tag.append(icon("photo"), "Photo");
+    bubble.append(tag);
+  }
+  if (turn.hasVoice) {
+    const tag = el("span", "attached");
+    tag.append(icon("voice"), "Voice note");
+    bubble.append(tag);
+  }
+  if (turn.text) bubble.append(turn.text);
+  if (turn.heard) bubble.append(note("Heard", turn.heard));
+  if (turn.seen) bubble.append(note("Seen in the photo", turn.seen));
+  me.append(bubble, el("div", "stamp", clock(turn.at)));
+  return { me, bubble };
+}
+
+function renderAnswer(turn, trace) {
+  const agent = el("div", "agent");
+  turn.messages.forEach(m => {
+    const say = el("div", "say");
+    say.append(linked(m));
+    agent.append(say);
+  });
+  if (turn.sources?.length) {
+    const pills = el("div", "pills");
+    pills.setAttribute("aria-label", "Sources");
+    turn.sources.forEach(s => pills.append(el("span", "pill", s)));
+    agent.append(pills);
+  }
+  const meta = el("div", "meta");
+  const figures = [clock(turn.doneAt), `${turn.seconds.toFixed(1)} s`, `${turn.tokens.toLocaleString("en")} tokens`];
+  meta.append(el("span", "stamp", figures.join(" · ")));
+  const copy = el("button", "tool copy");
+  copy.type = "button";
+  copy.setAttribute("aria-label", "Copy the answer");
+  copy.append(icon("copy"));
+  copy.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(turn.messages.join("\n\n"));
+      copy.replaceChildren(icon("check"));
+      setTimeout(() => copy.replaceChildren(icon("copy")), 1200);
+    } catch {}
+  };
+  agent.append(meta);
+  if (trace.nodes.size) addDrawer(meta, agent, trace);
+  meta.append(copy);
+  return agent;
+}
+
+function addDrawer(meta, host, trace) {
+  const steps = trace.tally();
+  const toggle = el("button", "tool", `Show trace · ${steps}`);
+  toggle.type = "button";
+  toggle.setAttribute("aria-expanded", "false");
+  const drawer = el("div", "drawer");
+  const clip = el("div");
+  clip.append(trace.root);
+  drawer.append(clip);
+  toggle.onclick = () => {
+    const open = drawer.dataset.open !== "true";
+    drawer.dataset.open = String(open);
+    toggle.textContent = `${open ? "Hide" : "Show"} trace · ${steps}`;
+    toggle.setAttribute("aria-expanded", String(open));
+  };
+  meta.append(toggle);
+  host.append(drawer);
+}
+
+function renderFailure(turn, trace, payload) {
+  const agent = el("div", "agent");
+  agent.append(el("div", "say failed", turn.error));
+  const meta = el("div", "meta");
+  if (payload) {
+    const retry = el("button", "tool");
+    retry.type = "button";
+    retry.append(icon("retry"), "Try again");
+    retry.onclick = () => {
+      if (busy) return;
+      agent.closest(".turn").remove();
+      turns.splice(turns.indexOf(turn), 1);
+      save();
+      submit(payload);
+    };
+    meta.append(retry);
+  }
+  agent.append(meta);
+  if (trace.nodes.size) addDrawer(meta, agent, trace);
+  return agent;
+}
+
+function renderTurn(turn) {
+  const box = el("div", "turn");
+  box.append(renderMe(turn).me);
+  const trace = new Trace(turn.trace ?? []);
+  if (turn.error) box.append(renderFailure(turn, trace, null));
+  else if (turn.messages) box.append(renderAnswer(turn, trace));
+  return box;
+}
+
+function renderHello() {
+  const hello = el("div", "hello");
+  hello.id = "hello";
+  hello.append(el("p", "", GREETING));
+  const list = el("div", "starters");
+  STARTERS.forEach(s => {
+    const b = el("button", "starter", s);
+    b.type = "button";
+    b.onclick = () => { if (!busy) submit({ text: s, image: "", audio: "" }); };
+    list.append(b);
+  });
+  hello.append(list);
+  return hello;
+}
+
+function renderAll() {
+  column.replaceChildren(...(turns.length ? turns.map(renderTurn) : [renderHello()]));
+  renderCards();
+  follow(true);
+}
+
+/* A turn */
+let busy = false;
+
+const problem = text => { $("problem").textContent = text; };
+
+function refreshControls() {
+  const ready = !busy && !recorder && ($("text").value.trim() || image);
+  $("send").disabled = !ready;
+  $("new").disabled = busy;
+  $("attach").disabled = !!recorder;
+  $("mic").disabled = busy && !recorder;
+}
+
+async function submit(payload) {
+  busy = true;
+  problem("");
+  refreshControls();
+  $("hello")?.remove();
+
+  const turn = {
+    at: Date.now(), text: payload.text,
+    hasPhoto: !!payload.image, hasVoice: !!payload.audio,
+    heard: "", seen: "", trace: [],
+  };
+  turns.push(turn);
+  const box = el("div", "turn");
+  const { me, bubble } = renderMe(turn, payload.image);
+  box.append(me);
+
+  const working = el("div", "working");
+  const status = el("div", "status");
+  status.setAttribute("role", "status");
+  const typing = el("span", "typing");
+  typing.append(el("i"), el("i"), el("i"));
+  status.append(typing, el("span", "shimmer", "The agent is working"));
+  const trace = new Trace();
+  trace.root.hidden = true;
+  working.append(status, trace.root);
+  box.append(working);
+  column.append(box);
+  follow(true);
+
+  const onStep = node => {
+    trace.root.hidden = false;
+    trace.upsert(node);
+    if (node.kind === "read" && node.status === "done" && node.text) {
+      const label = node.who === "voice" ? "Heard" : "Seen in the photo";
+      turn[node.who === "voice" ? "heard" : "seen"] = node.text;
+      bubble.append(note(label, node.text, true));
+    }
+    follow();
+  };
+
+  let done = null, failure = null, answering = false;
+  try {
+    const res = await fetch("/chat/stream", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ session, ...payload }),
+    });
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      failure = { status: res.status, detail: typeof body.detail === "string" ? body.detail : "" };
+    } else {
+      answering = true;
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      for (;;) {
+        const { value, done: ended } = await reader.read();
+        if (value) buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!line) continue;
+          const event = JSON.parse(line);
+          if (event.type === "step") onStep(event.node);
+          else if (event.type === "done") done = event;
+          else if (event.type === "error") failure = event;
+        }
+        if (ended) break;
+      }
+      if (!done && !failure) failure = { status: 0, detail: "" };
+    }
+  } catch {
+    failure = { status: 0, detail: "" };
+  }
+
+  trace.root.hidden = false;
+  trace.cut();
+  trace.settle();
+  turn.trace = trace.list().map(({ since, ...n }) => n);
+  working.dataset.out = "true";
+  await new Promise(r => setTimeout(r, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 170));
+
+  if (done) {
+    Object.assign(turn, {
+      messages: done.messages, sources: done.sources, tokens: done.tokens, seconds: done.seconds,
+      doneAt: Date.now(), heard: done.heard || turn.heard, seen: done.seen || turn.seen,
+    });
+    working.replaceWith(renderAnswer(turn, trace));
+    updateCards(done.cart, done.form);
+  } else {
+    /* Once the stream started the server finishes the turn on its own: sending it again would pay for it twice. */
+    const lost = answering && failure.status === 0;
+    turn.error = lost ? "The connection dropped while the advisor was working. It may still finish, so wait a moment before you ask again." : explain(failure);
+    working.replaceWith(renderFailure(turn, trace, lost || failure.status === 429 || failure.status === 422 ? null : payload));
+  }
+  busy = false;
+  save();
+  refreshControls();
+  follow();
+}
+
+function explain(f) {
+  if (f.status === 0) return "The connection dropped. Try again.";
+  if ((f.status === 429 || f.status === 422) && f.detail) return sentence(f.detail);
+  return "The advisor could not answer. Try again.";
+}
+
+/* Cards: the cart and the billing details the agent is filling in. */
+let front = "cart", open = false, unseen = new Set(), previous = { cart: null, form: null };
+const wide = matchMedia("(min-width: 1024px)");
+
+function money(n, currency) {
+  if (n === null || n === undefined) return "";
+  try {
+    if (currency) return new Intl.NumberFormat("en", { style: "currency", currency, currencyDisplay: "narrowSymbol" }).format(n);
+  } catch {}
+  return n.toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function cartView(c) {
+  const items = c?.items ?? [];
+  const units = items.reduce((sum, i) => sum + (i.quantity ?? 0), 0);
+  const unpriced = items.length > 0 && !c.chargeable;
+  const label = unpriced ? "Cannot charge yet" : c?.status === "link_sent" ? "Link sent" : c?.status === "cleared" ? "Cleared" : "Building";
+  const tone = unpriced || c?.status === "link_sent" ? "warning" : "neutral";
+  const amount = units > 0 ? `${units} ${units === 1 ? "unit" : "units"}` : `${items.length} ${items.length === 1 ? "product" : "products"}`;
+  const total = c?.total === null || c?.total === undefined ? "To be calculated" : money(c.total, c.currency);
+  return {
+    id: "cart", title: "Cart", icon: "cart", label, tone,
+    summary: items.length ? `${amount} · ${total}` : c?.status === "cleared" ? "Cleared · started over" : "No products yet",
+    count: units || items.length,
+  };
+}
+
+function formView(f) {
+  const schema = f?.form_schema ?? [];
+  const values = f?.fields ?? {};
+  const required = schema.filter(x => x.required);
+  const filled = required.filter(x => values[x.id]).length;
+  const next = schema.find(x => x.id === f?.missing?.[0]);
+  const done = required.length > 0 && filled === required.length;
+  return {
+    id: "form", title: f?.title || "Billing details", icon: "form",
+    label: done ? "Complete" : `${filled} of ${required.length}`, tone: done ? "success" : "neutral",
+    summary: done ? "Everything needed to invoice" : next ? `Next: ${next.label}` : "No details yet",
+    count: done ? 0 : Object.keys(values).length ? required.length - filled : 0,
+  };
+}
+
+function visibleCards() {
+  const list = [];
+  const c = cards.cart, f = cards.form;
+  if (c?.items?.length || c?.status === "cleared") list.push(cartView(c));
+  if (Object.keys(f?.fields ?? {}).length || c?.items?.length) list.push(formView(f));
+  return list;
+}
+
+function cartBody(c) {
+  const box = el("div");
+  const items = c?.items ?? [];
+  if (!items.length) {
+    box.append(el("p", "empty", c?.status === "cleared" ? "The customer started over. What they ask for next appears here." : "When you ask for something, it appears here with its quantity and price."));
+    return box;
+  }
+  const before = new Map((previous.cart?.items ?? []).map(i => [lineKey(i), i]));
+  const ul = el("ul", "lines");
+  items.forEach(i => {
+    const li = el("li");
+    const was = before.get(lineKey(i));
+    const qty = el("span", "qty", i.quantity ?? "–");
+    if (previous.cart && (!was || was.quantity !== i.quantity)) qty.classList.add("flash");
+    const what = el("span", "what");
+    const name = i.product || i.said?.product || "Product";
+    const unit = i.presentation || i.said?.presentation || "";
+    const each = i.price !== null && i.price !== undefined ? `${money(i.price, i.currency || c.currency)} each` : unit ? "No price" : "Presentation not chosen";
+    what.append(el("b", "", name), el("span", "", [unit, each].filter(Boolean).join(" · ")));
+    what.firstChild.title = name;
+    li.append(qty, what, el("span", "sub", i.subtotal === null || i.subtotal === undefined ? "–" : money(i.subtotal, i.currency || c.currency)));
+    ul.append(li);
+  });
+  box.append(ul);
+  if (!c.chargeable) {
+    box.append(el("p", "hint", `This order cannot be charged yet: ${blockers(items).join("; ")}.`));
+  }
+  return box;
+}
+
+function blockers(items) {
+  const out = [];
+  items.forEach(i => {
+    const name = i.product || i.said?.product || "a line";
+    if (!i.product) out.push(`${name} is not in the catalog`);
+    else if (i.quantity === null || i.quantity === undefined || !i.presentation) {
+      const gaps = [i.quantity ?? "a quantity", i.presentation || "a presentation"].filter(g => typeof g === "string" && g.startsWith("a "));
+      out.push(`${name} still needs ${gaps.join(" and ")}`);
+    }
+    else if (i.subtotal === null || i.subtotal === undefined) out.push(`${name} has no price yet`);
+    else if (!Number.isInteger(i.quantity)) out.push(`${name} needs a whole quantity`);
+  });
+  if (new Set(items.map(i => i.currency)).size > 1) out.push("the lines are in different currencies");
+  return out.length ? out : ["a line is not ready"];
+}
+
+const lineKey = i => `${i.sku ?? i.product ?? i.said?.product}·${i.presentation ?? i.said?.presentation ?? ""}`;
+
+function formBody(f) {
+  const box = el("div");
+  const schema = f?.form_schema ?? [];
+  const values = f?.fields ?? {};
+  const pending = schema.filter(x => x.required && !values[x.id]);
+  const filled = schema.filter(x => values[x.id]);
+  const rows = [...pending, ...filled.filter(x => x.required), ...filled.filter(x => !x.required)];
+  if (!rows.length) {
+    box.append(el("p", "empty", "No details yet."));
+    return box;
+  }
+  const dl = el("dl", "fields");
+  rows.forEach(x => {
+    const row = el("div");
+    const dt = el("dt", "", x.label);
+    if (!x.required) dt.append(el("small", "", "· optional"));
+    const value = values[x.id];
+    const dd = el("dd", value ? "" : "pending", value || "pending");
+    if (value && previous.form && previous.form.fields?.[x.id] !== value) dd.classList.add("flash");
+    row.append(dt, dd);
+    dl.append(row);
+  });
+  box.append(dl);
+  const blank = schema.filter(x => !x.required && !values[x.id]).length;
+  if (blank) box.append(el("p", "blank", `${blank} optional ${blank === 1 ? "field" : "fields"} blank`));
+  return box;
+}
+
+function renderCards() {
+  const views = visibleCards();
+  const host = $("host"), card = $("card"), dock = $("dock");
+  host.dataset.cards = String(views.length > 0);
+  if (!views.length) { open = false; }
+  if (views.length && !views.some(v => v.id === front)) front = views[0].id;
+  const active = views.find(v => v.id === front);
+
+  const known = new Set([...dock.children].map(b => b.dataset.id));
+  dock.replaceChildren(peek, ...views.map(v => {
+    const b = el("button", "chat-bubble");
+    b.type = "button";
+    b.dataset.id = v.id;
+    if (known.has(v.id)) b.style.animation = "none";
+    b.setAttribute("aria-label", `${v.title}, ${v.label}: ${v.summary}`);
+    b.setAttribute("aria-controls", "card");
+    b.setAttribute("aria-expanded", String(open && v.id === front));
+    b.append(icon(v.icon));
+    if (v.count > 0) b.append(el("span", "count", v.count));
+    b.onclick = () => {
+      if (v.id === front) setOpen(!open);
+      else { front = v.id; unseen.delete(v.id); setOpen(true); }
+    };
+    return b;
+  }));
+
+  card.dataset.open = String(open && !!active);
+  card.inert = !open;
+  $("scrim").dataset.open = String(open);
+  if (!active) { card.replaceChildren(); return; }
+
+  const parts = [];
+  const grab = el("div", "grab");
+  grab.append(el("i"));
+  dragToClose(grab);
+  parts.push(grab);
+  if (views.length > 1) {
+    const tabs = el("div", "tabs");
+    tabs.setAttribute("role", "tablist");
+    views.forEach(v => {
+      const t = el("button", "tab", v.title);
+      t.type = "button";
+      t.setAttribute("role", "tab");
+      t.setAttribute("aria-selected", String(v.id === front));
+      if (unseen.has(v.id)) t.dataset.unseen = "true";
+      t.onclick = () => { front = v.id; unseen.delete(v.id); renderCards(); };
+      tabs.append(t);
+    });
+    parts.push(tabs);
+  }
+  const head = el("header", "card-head");
+  const round = el("span", "card-icon");
+  round.append(icon(active.icon));
+  const copy = el("span", "card-copy");
+  const row = el("span", "card-title");
+  const strong = el("strong", "", active.title);
+  strong.id = "card-title";
+  const pill = el("span", "tone", active.label);
+  pill.dataset.tone = active.tone;
+  row.append(strong, pill);
+  copy.append(row, el("span", "card-summary", active.summary));
+  const close = el("button", "round small close");
+  close.type = "button";
+  close.setAttribute("aria-label", `Close ${active.title}`);
+  close.append(icon("close"));
+  close.onclick = () => setOpen(false);
+  head.append(round, copy, close);
+  parts.push(head);
+  const body = el("div", "card-body");
+  const swap = active.id === "cart" ? cartBody(cards.cart) : formBody(cards.form);
+  swap.classList.add("swap");
+  body.append(swap);
+  parts.push(body);
+  card.replaceChildren(...parts);
+}
+
+function setOpen(value) {
+  const inside = $("card").contains(document.activeElement);
+  open = value;
+  if (open) hush();
+  renderCards();
+  if (open && !wide.matches) $("card").focus();
+  if (inside && !open) $("dock").querySelector(`[data-id="${front}"]`)?.focus();
+}
+
+/* With the card closed, a change has to show itself: the bubble pulses and says what moved. */
+const peek = el("p", "peek");
+peek.setAttribute("aria-hidden", "true");
+let peekTimer = 0;
+
+function hush() {
+  clearTimeout(peekTimer);
+  peek.dataset.show = "false";
+}
+
+function tell(view, statusMoved) {
+  const head = el("span", "peek-head");
+  const tone = el("span", "tone", view.label);
+  tone.dataset.tone = view.tone;
+  head.append(el("strong", "", view.title), tone);
+  peek.replaceChildren(head, el("span", "peek-summary", view.summary));
+  peek.dataset.show = "true";
+  $("told").textContent = `${view.title}, ${view.label}: ${view.summary}`;
+  clearTimeout(peekTimer);
+  peekTimer = setTimeout(hush, statusMoved ? 5200 : 2600);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  $("dock").querySelector(`[data-id="${view.id}"]`)?.animate(
+    [{ transform: "scale(1)" }, { transform: "scale(1.12)" }, { transform: "scale(1)" }],
+    { duration: 420, easing: "cubic-bezier(.2, .8, .2, 1)" },
+  );
+}
+
+function updateCards(cart, form) {
+  previous = { cart: cards.cart, form: cards.form };
+  const changed = [];
+  const labels = new Map(visibleCards().map(v => [v.id, v.label]));
+  if (JSON.stringify(cart) !== JSON.stringify(cards.cart)) changed.push("cart");
+  if (JSON.stringify(form?.fields) !== JSON.stringify(cards.form?.fields)) changed.push("form");
+  cards = { cart, form };
+  const now = visibleCards().map(v => v.id);
+  const shown = changed.filter(id => now.includes(id));
+  if (shown.length) {
+    if (open && !shown.includes(front)) shown.forEach(id => unseen.add(id));
+    else if (!open) front = shown[0];
+  }
+  if (!labels.size && now.length && wide.matches) open = true;
+  renderCards();
+  previous = { cart, form };
+  const moved = visibleCards().find(v => v.id === shown[0]);
+  if (moved && !open) tell(moved, labels.has(moved.id) && labels.get(moved.id) !== moved.label);
+}
+
+function dragToClose(handle) {
+  let startY = 0, moved = 0, dragging = false;
+  const card = $("card");
+  handle.onpointerdown = e => { dragging = true; startY = e.clientY; moved = 0; handle.setPointerCapture(e.pointerId); card.dataset.dragging = "true"; };
+  handle.onpointermove = e => {
+    if (!dragging) return;
+    moved = Math.max(0, e.clientY - startY);
+    card.style.setProperty("--drag", `${moved}px`);
+  };
+  handle.onpointerup = handle.onpointercancel = () => {
+    if (!dragging) return;
+    dragging = false;
+    delete card.dataset.dragging;
+    card.style.removeProperty("--drag");
+    if (moved > card.offsetHeight / 3) setOpen(false);
+  };
+}
+
+$("scrim").onclick = () => setOpen(false);
+addEventListener("keydown", e => { if (e.key === "Escape" && open) setOpen(false); });
+wide.addEventListener("change", renderCards);
+
+const barSize = new ResizeObserver(() => {
+  document.documentElement.style.setProperty("--above", `${$("bar").offsetHeight + 12}px`);
+});
+barSize.observe($("bar"));
+
+/* Composer */
+let image = "", recorder = null, recordTimer = null;
+
+const grow = () => {
+  const t = $("text");
+  t.style.height = "auto";
+  t.style.height = `${t.scrollHeight}px`;
+};
+$("text").addEventListener("input", () => { grow(); refreshControls(); });
+$("text").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey && !e.isComposing) {
+    e.preventDefault();
+    $("composer").requestSubmit();
+  }
+});
+$("composer").addEventListener("submit", e => {
+  e.preventDefault();
+  const text = $("text").value.trim();
+  if (busy || recorder || !(text || image)) return;
+  const payload = { text, image, audio: "" };
+  $("text").value = "";
+  grow();
+  clearPhoto();
+  submit(payload);
+});
+$("attach").onclick = () => $("photo").click();
+
+function clearPhoto() {
+  image = "";
+  $("photo").value = "";
+  $("chip").hidden = true;
+  refreshControls();
+}
+$("chip-x").onclick = clearPhoto;
+
 async function shrink(file) {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
@@ -140,14 +1303,19 @@ $("photo").onchange = async e => {
   if (!file) return;
   try {
     image = await shrink(file);
-    attached("Photo ready", image);
+    const thumb = el("img");
+    thumb.src = image;
+    thumb.alt = "";
+    $("chip").querySelector("img")?.remove();
+    $("chip").prepend(thumb);
+    $("chip").hidden = false;
+    problem("");
+    refreshControls();
   } catch {
-    add("note error", "That image could not be opened. Try a JPEG or PNG.");
+    problem("That image could not be opened. Try another one.");
   }
 };
-$("drop").onclick = clearAttachments;
 
-/* Browsers record webm or mp4. The API was tried with WAV, so the page converts: 16 kHz mono PCM. */
 async function toWav(blob) {
   const raw = await blob.arrayBuffer();
   const ctx = new OfflineAudioContext(1, 1, RATE);
@@ -175,84 +1343,79 @@ async function toWav(blob) {
   return btoa(binary);
 }
 
+function recording(on) {
+  $("text").hidden = on;
+  $("rec").hidden = !on;
+  $("mic").setAttribute("aria-label", on ? "Stop and send the voice note" : "Record a voice note");
+  $("mic").replaceChildren(on ? stopIcon() : icon("voice"));
+  refreshControls();
+}
+
+function stopIcon() {
+  const n = icon("voice");
+  n.innerHTML = '<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor" stroke="none"/>';
+  return n;
+}
+
 $("mic").onclick = async () => {
   if (recorder) { recorder.stop(); return; }
+  if (busy) return;
   let stream;
   try {
     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   } catch {
-    add("note error", "The microphone is blocked. Allow it in the browser and try again.");
+    problem("The microphone is blocked. Allow it in the browser, or write your message.");
     return;
   }
+  problem("");
   const chunks = [];
+  const started = Date.now();
   recorder = new MediaRecorder(stream);
   recorder.ondataavailable = e => chunks.push(e.data);
   recorder.onstop = async () => {
-    clearTimeout(stopTimer);
+    clearInterval(recordTimer);
     stream.getTracks().forEach(t => t.stop());
+    const type = recorder.mimeType;
     recorder = null;
-    $("mic").classList.remove("on");
-    $("mic").textContent = "Voice";
+    recording(false);
     try {
-      audio = await toWav(new Blob(chunks, { type: chunks[0]?.type }));
-      send();
+      const audio = await toWav(new Blob(chunks, { type }));
+      const text = $("text").value.trim();
+      const photo = image;
+      $("text").value = "";
+      grow();
+      clearPhoto();
+      submit({ text, image: photo, audio });
     } catch {
-      add("note error", "That recording could not be read. Try again.");
+      problem("That recording could not be read. Try again.");
     }
   };
   recorder.start();
-  $("mic").classList.add("on");
-  $("mic").textContent = "Stop";
-  stopTimer = setTimeout(() => recorder?.stop(), MAX_SECONDS * 1000);
+  recording(true);
+  recordTimer = setInterval(() => {
+    const s = Math.floor((Date.now() - started) / 1000);
+    $("rec-time").textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+    if (s >= MAX_SECONDS) recorder?.stop();
+  }, 250);
 };
 
-async function send() {
-  const text = $("text").value.trim();
-  if (!text && !image && !audio) return;
-  log.querySelector(".starters")?.remove();
-
-  const mine = add("msg me");
-  if (image) { const img = new Image(); img.src = image; img.alt = "Photo you sent"; mine.append(img); }
-  if (text) mine.append(text);
-  if (audio && !text && !image) mine.textContent = "Voice note";
-  else if (audio) mine.append(" + voice note");
-
-  const body = { session, text, image, audio };
-  $("text").value = "";
-  clearAttachments();
-  $("send").disabled = true;
-  const waiting = add("note", image || audio ? "Reading what you sent, then checking the datasheets…" : "Checking the datasheets…");
-
-  try {
-    const r = await fetch("/chat", {
-      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
-    });
-    const data = await r.json().catch(() => ({}));
-    waiting.remove();
-    if (!r.ok) {
-      const detail = typeof data.detail === "string" ? data.detail : "The advisor could not answer. Try again.";
-      add("note error", detail);
-      return;
-    }
-    if (data.heard) add("note right", `Heard: ${data.heard}`);
-    if (data.seen) add("note right", `Seen in the photo: ${data.seen}`);
-    for (const m of data.messages) add("msg bot", m);
-    const from = data.sources.length ? `From ${data.sources.join(", ")}. ` : "";
-    add("note", `${from}${data.seconds} s, ${data.tokens.toLocaleString("en-US")} tokens`);
-  } catch {
-    waiting.remove();
-    add("note error", "The connection dropped. Try again.");
-  } finally {
-    $("send").disabled = false;
-  }
-}
-
-$("form").onsubmit = e => { e.preventDefault(); send(); };
-$("text").onkeydown = e => {
-  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); }
+$("new").onclick = () => {
+  if (busy) return;
+  session = newSession();
+  turns = [];
+  cards = { cart: null, form: null };
+  previous = { cart: null, form: null };
+  open = false;
+  unseen.clear();
+  hush();
+  problem("");
+  save();
+  renderAll();
+  $("text").focus();
 };
-add("msg bot", "Hi. Tell me what is happening in your crop, or send me a photo of it.");
-starters();
+
+renderAll();
+refreshControls();
 </script>
 </body>
 </html>
