@@ -7,6 +7,10 @@ answers it, and `wire.to_wire` turns the `AnswerOut` into a `Respuesta`. The fie
 the interior has no use for (`traza`, `turnId`, `conversationId`, `adjuntos`, `aviso`, `cerrados`) are
 accepted and dropped, not a 422.
 
+A turn the host opens with no customer text (a blank `pregunta` with `aviso`, or with a `done`
+or a `reject` in `efectos`, as agro's `Consulta._con_texto`) never reaches the advisor: it is
+answered 200 with no messages, echoing the sale, the effects and the form as they came.
+
 With `Accept: application/x-ndjson` the answer is a stream of lines (what knowledge asks for, so a long
 turn is not read as a dead one): an empty line every `HEARTBEAT` seconds while the turn runs, then
 `{"fin": {"status": N, "body": {...}}}` with the status and the body the plain answer would have had.
@@ -32,8 +36,13 @@ from catalejo.llm import Provider
 from config import Settings, get_settings
 from core_agent.agent import CLAUDE_THINKING, GEMINI_THINKING, MUSE_THINKING, OPENAI_THINKING
 from host import Advisor
+from host.effects import effects_to_dict
+from host.effects import op_from_dict as effect_op_from_dict
+from host.effects import summary as effects_summary
+from host.form import form_from, form_to_dict
+from host.sale import op_from_dict, sale_to_dict, summary
 from routes.queries import advisor, run_query
-from schemas.queries import AnswerOut, Query
+from schemas.queries import AnswerOut, EffectsOut, FormOut, Query, SaleOut
 from wire import to_english, to_wire
 
 log = logging.getLogger(__name__)
@@ -67,6 +76,65 @@ def query_of(body: dict[str, Any]) -> Query:
         return Query.model_validate(to_english("Query", body))
     except ValidationError as e:
         raise HTTPException(status_code=422, detail=json.loads(e.json(include_url=False, include_context=False, include_input=False))) from e
+
+
+HOST_QUESTION = "host"
+"""The `pregunta` a host-opened turn validates with: the turn carries no customer text, so the blank
+goes in as this and is never read (only the sale, the effects and the deal are)."""
+
+
+def host_opened(body: dict[str, Any]) -> bool:
+    """Whether the host opened this turn with no customer text: a blank `pregunta` with `aviso`, or
+    with a `done` or a `reject` in `efectos`.
+
+    The same condition as agro's `Consulta._con_texto`: the host reporting what it executed, or its
+    notice, opens a turn with an empty question. Anything else blank is still a 422, and a missing
+    `pregunta` is not blank.
+    """
+    question = body.get("pregunta")
+    if not isinstance(question, str) or question.strip():
+        return False
+    if body.get("aviso") is not None:
+        return True
+    effects = body.get("efectos")
+    return isinstance(effects, list) and any(isinstance(op, dict) and op.get("verb") in ("done", "reject") for op in effects)
+
+
+async def empty_answer_of(query: Query, a: Advisor, settings: Settings) -> tuple[int, dict[str, Any]]:
+    """The host's turn answered: no customer text in, no messages out, and the advisor never runs.
+
+    The sale, the effects and the form come back as they came (nothing moved: there was no turn),
+    with the readings recomputed over them; the tokens are zero and there is no judgment, no rules
+    and no changes. `llm` goes as always: it says which model would have answered.
+    """
+    sale = tuple(op_from_dict(op.model_dump()) for op in query.sale or [])
+    effects = tuple(effect_op_from_dict(op.model_dump()) for op in query.effects or [])
+    seed = form_from(query.deal.form.fields if query.deal and query.deal.form else None)
+    out = AnswerOut(
+        answer="",
+        messages=[],
+        sources=[],
+        grounded=False,
+        tokens=0,
+        tokens_input=0,
+        tokens_cached=0,
+        tokens_output=0,
+        tokens_typesafe=0,
+        turns=0,
+        halt=False,
+        fails=[],
+        seconds=0.0,
+        truncated=False,
+        no_search_terms=False,
+        sale=SaleOut(**sale_to_dict(summary(sale))),
+        effects=EffectsOut(**effects_to_dict(effects_summary(effects))),
+        form=FormOut(**form_to_dict(seed)),
+        restart=False,
+        changes=None,
+        rules=[],
+    )
+    llm = llm_of(getattr(a, "model", None), settings)
+    return 200, to_wire("AnswerOut", {**out.model_dump(mode="json"), "llm": llm})
 
 
 async def answer_of(query: Query, a: Advisor, settings: Settings) -> tuple[int, dict[str, Any]]:
@@ -114,9 +182,14 @@ async def consult(
     settings: Settings = Depends(get_settings),
 ) -> Response:
     """Knowledge's `Consulta` in, its `Respuesta` out; a stream of lines if it asks for `application/x-ndjson`."""
-    query = query_of(body)
+    if host_opened(body):
+        query = query_of({**body, "pregunta": HOST_QUESTION})
+        turn = empty_answer_of(query, a, settings)
+    else:
+        query = query_of(body)
+        turn = answer_of(query, a, settings)
     log.info("/consultas: conversation=%s turn=%s", body.get("conversationId", ""), body.get("turnId", ""))
     if NDJSON in request.headers.get("accept", ""):
-        return StreamingResponse(live(answer_of(query, a, settings)), media_type=NDJSON)
-    status, answer = await answer_of(query, a, settings)
+        return StreamingResponse(live(turn), media_type=NDJSON)
+    status, answer = await turn
     return JSONResponse(status_code=status, content=answer)

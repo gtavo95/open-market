@@ -320,6 +320,82 @@ class TestWhenTheTurnFails:
         assert customer.post("/consultas", content=b"not json", headers={"content-type": "application/json"}).status_code == 422
 
 
+class TestTheTurnTheHostOpens:
+    """A blank `pregunta` is not a 422 when the host opened the turn: with `aviso`, or with a `done`
+    or a `reject` in `efectos` (agro's `Consulta._con_texto`). There is no customer text, so the
+    answer carries no messages and the advisor never runs."""
+
+    def test_with_aviso_a_blank_question_is_answered_with_no_messages(self, customer: TestClient) -> None:
+        a = built(customer, FakeAdvisor())
+
+        r = customer.post("/consultas", json={"pregunta": "   ", "aviso": {"motivo": "retomar"}})
+
+        assert r.status_code == 200
+        body = r.json()
+        assert body["respuesta"] == "" and body["mensajes"] == []
+        assert (body["tokens"], body["turnos"], body["segundos"]) == (0, 0, 0.0)
+        assert body["llm"] == LLM
+        assert a.calls == []
+
+    @pytest.mark.parametrize("verb", ["done", "reject"])
+    def test_with_a_done_or_a_reject_a_blank_question_is_answered_with_no_messages(self, customer: TestClient, verb: str) -> None:
+        a = built(customer, FakeAdvisor())
+
+        r = customer.post("/consultas", json={"pregunta": "", "efectos": [{"verb": verb, "id": "send_ficha"}]})
+
+        assert r.status_code == 200
+        assert r.json()["mensajes"] == []
+        assert a.calls == []
+
+    def test_the_moves_come_back_as_they_came(self, customer: TestClient) -> None:
+        built(customer, FakeAdvisor())
+        efectos = [
+            {"verb": "propose", "id": "send_ficha", "kind": "document"},
+            {"verb": "done", "id": "send_catalogo"},
+        ]
+
+        body = customer.post("/consultas", json={"pregunta": "", "efectos": efectos, "venta": REQUEST["venta"], "deal": DEAL}).json()
+
+        assert body["respuesta"] == "" and body["mensajes"] == []
+        assert body["venta"]["ops"] == REQUEST["venta"]
+        assert body["efectos"]["ops"] == efectos
+        assert body["efectos"]["pendientes"] == [{"id": "send_ficha", "kind": "document", "args": [], "ejecutable": False}]
+        assert body["formulario"]["campos"] == {"nit": "CF", "razon_social": "Agro SA"}
+        assert body["cambios"] is None
+
+    def test_without_either_a_blank_question_is_still_a_422(self, customer: TestClient) -> None:
+        a = built(customer, FakeAdvisor())
+
+        bodies = [
+            {"pregunta": ""},
+            {"pregunta": "  ", "aviso": None},
+            {"pregunta": "", "efectos": []},
+            {"pregunta": "", "efectos": [{"verb": "propose", "id": "send_ficha"}]},
+            {"pregunta": "", "efectos": [{"verb": "resolve", "id": "send_ficha"}]},
+        ]
+        for body in bodies:
+            assert customer.post("/consultas", json=body).status_code == 422, body
+
+        assert a.calls == []
+
+    def test_the_rest_of_the_request_still_validates(self, customer: TestClient) -> None:
+        built(customer, FakeAdvisor())
+
+        assert customer.post("/consultas", json={"pregunta": "", "aviso": {"motivo": "retomar"}, "pago": "trueque"}).status_code == 422
+        assert customer.post("/consultas", json={"pregunta": "", "efectos": [{"verb": "done", "id": "send_ficha"}], "historia": "no"}).status_code == 422
+
+    def test_over_the_stream_the_fin_carries_the_empty_answer(self, customer: TestClient) -> None:
+        a = built(customer, FakeAdvisor())
+
+        r = customer.post("/consultas", json={"pregunta": "", "aviso": {"motivo": "retomar"}}, headers={"accept": NDJSON})
+
+        assert r.status_code == 200
+        fin = json.loads(r.text)["fin"]
+        assert fin["status"] == 200
+        assert fin["body"]["respuesta"] == "" and fin["body"]["mensajes"] == []
+        assert a.calls == []
+
+
 class TestTheStream:
     ASK = {"accept": NDJSON}
 
