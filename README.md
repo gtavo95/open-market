@@ -1,13 +1,15 @@
 # open-market
 
 A sales advisor for farm inputs that runs on Muse Wonder through the Meta Model API. A farmer
-describes a pest in their own words on chat; the advisor finds the right product in the
+describes a pest on chat, in writing, in a voice note or with a photo; the advisor finds the right product in the
 distributor's catalog, gives the dose from the datasheet, cites its source, builds the priced order
 and takes it to payment. When no datasheet covers the problem, it says so and hands off to an
 agronomist instead of inventing a product or a dose.
 
 Built for the Meta Global AI Developer Hackathon, theme "Build for Your World". The catalog in
 `okf/` belongs to a fictional Guatemalan distributor, Agroinsumos Ceiba.
+
+Try it: https://open-market-28985494187.europe-west1.run.app
 
 ## What was built for the hackathon
 
@@ -22,6 +24,36 @@ Done during the hackathon:
   onto the Meta Model API.
 - Measured four Muse configurations with the eval suite and picked the default from the results
   below.
+- Added photo and voice input: Muse Wonder reads the attachment and the turn goes on as text
+  (`src/host/perception.py`, `src/core_agent/prompts/perception.py`).
+- Added the public chat page and its route (`src/web/index.html`, `src/routes/chat.py`) and deployed
+  it on Cloud Run (`scripts/deploy.sh`).
+
+## Photo and voice
+
+The Meta Model API takes images and audio in the same `/responses` call as text, so Wonder does both
+readings at low effort. A photo becomes a description that says how sure it is, and a voice note
+becomes a transcript. That text is the customer's turn, so the searcher, the judge and the citation
+check run unchanged, and the page shows what was seen or heard so the customer can catch a misreading.
+The photo prompt forbids naming a product: only a datasheet can do that.
+
+Measured through `/chat` on Nov 3, 2026, 3 runs per case, read by hand. Photos are Wikimedia Commons
+images; voice notes are macOS text-to-speech, and the noisy one has Gaussian noise and a tone added.
+
+| Case | What happened |
+|---|---|
+| Photo, powdery mildew on squash | 2 of 3 recommended Escudo with the datasheet dose; 1 asked for the crop |
+| Photo, coffee leaf rust (not in the catalog) | No product in 3 of 3: 1 escalated, 2 asked to confirm |
+| Photo, thrips damage on hydrangea | Read as hydrangea, thrips or aphids unclear; no product in 3 of 3, 2 escalated |
+| Photo, a tractor | No product in 2 of 2, asked what the problem is; 1 run failed reading the photo |
+| Voice, clean, English | Exact transcript and Silverstrike in 3 of 3 |
+| Voice, heavy noise, English | Heard right in 1 of 3; the 2 misheard ones escalated, with no product |
+| Voice, Spanish | Exact transcript, answered in Spanish with Silverstrike in 2 of 2; 1 run failed reading the note |
+
+No run recommended a wrong product. A misreading ended in a question or an agronomist. The 2 failed
+readings, a timeout and an empty answer, led to the retries now in `perception.py`, which have not
+been measured at this scale. A turn with a photo took 48 to 81 s and one with a voice note 36 to 63 s.
+Not measured yet: real farmers' voices, and recordings made in a browser.
 
 ## Why Muse Wonder
 
@@ -36,7 +68,9 @@ source; "criterion" is a TypeSafe judge reading the answer against the case.
 | `muse-spark-1.3-contributor`, low | 9/18 | 17/18 | 3/9 | 44 |
 | `muse-spark-1.3-contributor`, medium | 8/18 | 18/18 | 3/9 | 112 |
 
-This is a small sample: 3 runs do not separate low from medium on Wonder. A known gap remains on
+This is a small sample: 3 runs do not separate low from medium on Wonder, and the default moves
+between runs: after the last prompt changes it read 15/18 and then 17/18, with the criterion at 18/18
+and orders at 6/9 both times. A known gap remains on
 the turn that adds a second product: the internal cart reads 6 L of the first product for one turn,
 and it is right again on the next turn.
 
@@ -148,12 +182,17 @@ what the lock says is not deployed silently.
 
 ## Deploy
 
+`scripts/deploy.sh secrets` then `scripts/deploy.sh` put the demo on Cloud Run. It runs on one instance
+because the chat sessions and the turn cap (`DEMO_TURNS`) live in the process.
+
 The `Dockerfile` builds the app with the bundle in `okf/`. It needs `MUSE_API_KEY` and
 `TYPESAFE_API_KEY` in the environment; `/health` says why the advisor did not start. `/queries` and
 `/a2a` ask for a bearer token when `ISSUER` is configured (`src/auth.py`).
 
 ## Endpoints
 
+- `GET /` — the chat page
+- `POST /chat` — `{"session": "...", "text": "...", "image": "data:image/jpeg;base64,...", "audio": "<WAV in base64>"}`, no login, capped by `DEMO_TURNS`
 - `POST /queries` — `{"question": "...", "history": [{"question": "...", "answer": "..."}], "sale": [...], "effects": [...]}`
 - `GET /queries/catalog` — how many datasheets are loaded and how many slots are free
 - `GET /health` — whether the process is alive and whether the advisor got built

@@ -11,11 +11,14 @@ from typing import Any
 
 import httpx
 
-from catalejo.llm.muse import BASE, from_response
+from catalejo.llm import with_retries
+from catalejo.llm.muse import BASE, TRANSIENT, MuseError, from_response
 from core_agent.prompts.perception import PHOTO_PROMPT, VOICE_PROMPT
 
 TIMEOUT = 60.0
 """A photo at low effort took 22 s in the Nov 3, 2026 probe; the rest is margin."""
+RETRIES = 2
+"""On Nov 3, 2026, 2 of 21 readings failed with no retry: one timed out, one came back empty."""
 
 
 class Perception:
@@ -47,10 +50,19 @@ class Perception:
             "input": [{"role": "user", "content": [{"type": "input_text", "text": prompt}, part]}],
         }
         headers = {"Authorization": f"Bearer {self.key}"}
-        async with httpx.AsyncClient(timeout=TIMEOUT, transport=self.transport) as client:
-            r = await client.post(f"{BASE}/responses", headers=headers, json=body)
-        r.raise_for_status()
-        return from_response(r.json()).message.text.strip()
+
+        async def request() -> str:
+            async with httpx.AsyncClient(timeout=TIMEOUT, transport=self.transport) as client:
+                try:
+                    r = await client.post(f"{BASE}/responses", headers=headers, json=body)
+                except httpx.TransportError as e:
+                    raise MuseError(f"no answer from the API: {type(e).__name__}", transient=True) from e
+            if r.status_code in TRANSIENT:
+                raise MuseError(f"the API returned {r.status_code}", transient=True)
+            r.raise_for_status()
+            return from_response(r.json()).message.text.strip()
+
+        return await with_retries(request, retries=RETRIES, backoff=1.0)
 
 
 def message(said: str, seen: str) -> str:

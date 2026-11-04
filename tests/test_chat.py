@@ -157,6 +157,16 @@ class TestPerception:
         assert seen[0]["store"] is False
 
 
+    async def test_an_empty_reading_is_tried_again(self) -> None:
+        good = {"output": [{"type": "message", "content": [{"type": "output_text", "text": "A leaf."}]}]}
+        replies = [httpx.Response(200, json={"output": []}), httpx.Response(503), httpx.Response(200, json=good)]
+
+        eyes = Perception("key", "m", transport=httpx.MockTransport(lambda _: replies.pop(0)))
+
+        assert await eyes.photo(PHOTO) == "A leaf."
+        assert replies == []
+
+
 class TestMessage:
     def test_without_a_photo_it_is_what_they_said(self) -> None:
         assert message("hello", "") == "hello"
