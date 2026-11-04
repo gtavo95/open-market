@@ -1,0 +1,11 @@
+{
+  "effects": [
+    {
+      "verb": "done",
+      "id": "send_payment_link"
+    }
+  ],
+  "history": [],
+  "payment": "pending",
+  "question": "I already paid"
+}

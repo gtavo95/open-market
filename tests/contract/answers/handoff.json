@@ -1,0 +1,261 @@
+{
+  "answer": "I'm passing you to a person on our team through this same chat.",
+  "changes": null,
+  "effects": {
+    "ops": [
+      {
+        "args": [
+          [
+            "origin",
+            "requested_by_agent"
+          ],
+          [
+            "reason",
+            "asks_for_human"
+          ]
+        ],
+        "id": "handoff",
+        "kind": "handoff",
+        "verb": "propose"
+      }
+    ],
+    "pending": [
+      {
+        "args": [
+          [
+            "origin",
+            "requested_by_agent"
+          ],
+          [
+            "reason",
+            "asks_for_human"
+          ]
+        ],
+        "executable": true,
+        "id": "handoff",
+        "kind": "handoff"
+      }
+    ],
+    "state": "handoff proposed (requested_by_agent, asks_for_human)"
+  },
+  "fails": [],
+  "form": {
+    "fields": {},
+    "form_schema": [
+      {
+        "id": "legal_name",
+        "label": "Legal name",
+        "options": [],
+        "position": 1,
+        "required": false,
+        "type": "text"
+      },
+      {
+        "id": "nit",
+        "label": "NIT",
+        "options": [],
+        "position": 2,
+        "required": true,
+        "type": "text"
+      },
+      {
+        "id": "recipient",
+        "label": "Recipient",
+        "options": [],
+        "position": 3,
+        "required": true,
+        "type": "text"
+      },
+      {
+        "id": "phone",
+        "label": "Recipient's phone",
+        "options": [],
+        "position": 4,
+        "required": true,
+        "type": "tel"
+      },
+      {
+        "id": "email",
+        "label": "Email",
+        "options": [],
+        "position": 5,
+        "required": false,
+        "type": "email"
+      },
+      {
+        "id": "address",
+        "label": "Delivery address",
+        "options": [],
+        "position": 6,
+        "required": true,
+        "type": "textarea"
+      },
+      {
+        "id": "payment_method",
+        "label": "Payment method",
+        "options": [
+          "link",
+          "transfer"
+        ],
+        "position": 7,
+        "required": true,
+        "type": "select"
+      }
+    ],
+    "missing": [
+      "nit",
+      "recipient",
+      "phone",
+      "address",
+      "payment_method"
+    ],
+    "title": "Billing details"
+  },
+  "grounded": true,
+  "halt": false,
+  "messages": [
+    "I'm passing you to a person on our team through this same chat."
+  ],
+  "no_search_terms": false,
+  "restart": false,
+  "rules": [],
+  "sale": {
+    "active": "recipe",
+    "asks": {
+      "id": "quantity",
+      "what": "how many liters or containers of the product they want (if the order has several, for each one missing the quantity, by name)"
+    },
+    "closed": false,
+    "closed_steps": [
+      "pest",
+      "product"
+    ],
+    "judgment": {
+      "already_said": [],
+      "asks_again": [],
+      "error": "",
+      "labels": {},
+      "order": {
+        "chargeable": false,
+        "currency": null,
+        "items": [],
+        "restarted": false,
+        "total": null
+      },
+      "p": {
+        "has_search_terms": 0.95,
+        "said_billing_data": 0.04,
+        "said_payment_method": 0.04,
+        "said_quantity": 0.9,
+        "wants_to_buy": 0.85
+      },
+      "state": {
+        "crop": "tomato",
+        "pest": "thrips"
+      },
+      "unanswered": []
+    },
+    "ops": [
+      {
+        "id": "diagnosis",
+        "intent": "diagnose and build the cart",
+        "verb": "add_step"
+      },
+      {
+        "done_when": "has_search_terms",
+        "id": "pest",
+        "intent": "find out what they are looking for: the pest, or the product they already have in mind",
+        "parent": "diagnosis",
+        "verb": "add_step"
+      },
+      {
+        "done_when": "recommended_a_product",
+        "id": "product",
+        "intent": "one that works for that pest",
+        "parent": "diagnosis",
+        "verb": "add_step"
+      },
+      {
+        "done_when": "opens_a_datasheet",
+        "id": "recipe",
+        "intent": "the dose as the datasheet gives it",
+        "parent": "diagnosis",
+        "verb": "add_step"
+      },
+      {
+        "done_when": "order_with_quantities",
+        "id": "quantity",
+        "intent": "how many liters or containers of the product they want",
+        "parent": "diagnosis",
+        "verb": "add_step"
+      },
+      {
+        "done_when": "wants_to_buy",
+        "id": "decision",
+        "intent": "whether they want it: answer what they ask until they say they will buy it",
+        "parent": "diagnosis",
+        "verb": "add_step"
+      },
+      {
+        "id": "payment",
+        "intent": "charge",
+        "verb": "add_step"
+      },
+      {
+        "done_when": "said_payment_method",
+        "id": "method",
+        "intent": "which of the two ways: payment link or transfer",
+        "parent": "payment",
+        "verb": "add_step"
+      },
+      {
+        "id": "charge",
+        "intent": "give them the link, or the account of the company that collects",
+        "parent": "payment",
+        "verb": "add_step"
+      },
+      {
+        "id": "billing",
+        "intent": "the billing details",
+        "verb": "add_step"
+      },
+      {
+        "done_when": "complete_invoice",
+        "id": "data",
+        "intent": "NIT, who receives, their phone and the delivery address",
+        "parent": "billing",
+        "verb": "add_step"
+      },
+      {
+        "id": "pest",
+        "status": "done",
+        "verb": "mark"
+      },
+      {
+        "id": "product",
+        "status": "done",
+        "verb": "mark"
+      }
+    ],
+    "pending": [
+      "recipe",
+      "quantity",
+      "decision",
+      "method",
+      "charge",
+      "data"
+    ],
+    "stage": "diagnosis",
+    "state": "sale 2/8: next `recipe`",
+    "tree": "[plan] state:\n[ ] diagnosis: diagnose and build the cart\n    [x] pest: find out what they are looking for: the pest, or the product they already have in mind\n    [x] product: one that works for that pest\n    [ ] recipe: the dose as the datasheet gives it\n    [ ] quantity: how many liters or containers of the product they want\n    [ ] decision: whether they want it: answer what they ask until they say they will buy it\n[ ] payment: charge\n    [ ] method: which of the two ways: payment link or transfer\n    [ ] charge: give them the link, or the account of the company that collects\n[ ] billing: the billing details\n    [ ] data: NIT, who receives, their phone and the delivery address\nRemaining: `recipe`, `quantity`, `decision`, `method`, `charge`, `data`."
+  },
+  "seconds": 12.5,
+  "sources": [],
+  "tokens": 1200,
+  "tokens_cached": 600,
+  "tokens_input": 1000,
+  "tokens_output": 200,
+  "tokens_typesafe": 0,
+  "truncated": false,
+  "turns": 4
+}

@@ -1,0 +1,18 @@
+# The launch video script, turn by turn: `uv run python -m evals --flows=demo`.
+#
+# Same format as agro's `flows-cart.tsv`: flow, turn, question, pages, section, criterion, and
+# after that `conditions`, `history`, `escalates`, `effects`, `order`.
+#
+# Where it comes from: on Oct 12, 2026, with Silverstrike already describing thrips, the deployed
+# advisor kept escalating to the agronomist ("the catalog does not cover the silver spots and the
+# elongated bugs on tomato"). A pest described by symptoms has to reach Silverstrike without escalating.
+#
+# The criterion does not carry the value: neither prices nor totals.
+#
+# flow	turn	question	pages	section	criterion	conditions	history	escalates	effects	order
+demo-symptoms	1	Hi, I have 2 manzanas of tomato and these little elongated bugs showed up on the leaves, and the leaves have silver spots. What do you recommend?	products/silverstrike-45-ew.md	# Datasheet	recognizes thrips from the symptoms and recommends Silverstrike 45 EW with the datasheet's dose for tomato. Does not escalate to the agronomist or say the catalog does not cover it.	+ names Silverstrike | + gives a dose for tomato | - says the catalog does not cover the pest | - refers to the agronomist		no	-handoff	·
+demo-symptoms	2	Give me 3 liters. How much is it with shipping?	products/silverstrike-45-ew.md company_info/shipping.md	# Guatemala	takes three liters of Silverstrike as the order, gives the price and the shipping cost, and says shipping is free from the cutoff on the shipping page.	+ gives the Silverstrike price | + mentions the shipping cost | + mentions from what amount shipping is free		no	-handoff	Silverstrike:1 L:3
+demo-symptoms	3	Do you have anything to help the plant recover faster? Add 3 liters	products/raiz-viva.md	# Presentations	recommends Raíz Viva and adds it to the Silverstrike, without replacing it. Gives the total and, since it passes the cutoff, does not charge shipping.	+ names Raíz Viva | + keeps counting the Silverstrike in the order | + gives a total | - charges shipping | - takes the Silverstrike out of the order		no	-handoff	Silverstrike:1 L:3 + Raíz Viva:1 L:3
+demo-symptoms	4	Okay, how do I pay?	company_info/payments.md	# Payments	explains how to pay with what the payments page says, without asking about products or quantities again.	+ gives a payment method | - asks again which products they want | - asks for the presentation		no	-handoff	Silverstrike:1 L:3 + Raíz Viva:1 L:3
+demo-thrips	1	I have thrips on my tomato, what do you recommend?	products/silverstrike-45-ew.md	# Datasheet	recommends Silverstrike 45 EW for thrips on tomato with the datasheet's dose. Does not escalate.	+ names Silverstrike | + gives a dose for tomato | - refers to the agronomist		no	-handoff	·
+demo-outside	1	I have rust on my coffee, what should I put on it?	none	·	no datasheet covers rust: does not invent a product or a dose, and offers to pass the case to the agronomist.	- recommends Silverstrike, Escudo or Raíz Viva for rust | - invents a dose		yes	handoff	·

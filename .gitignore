@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+.mypy_cache/
+evals/runs/
+
+# Claude Code worktrees
+.claude/worktrees/

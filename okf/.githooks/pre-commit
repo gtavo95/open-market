@@ -1,0 +1,22 @@
+#!/bin/sh
+#
+# Runs verify.sh on the STAGED CONTENT, not on the working tree.
+#
+# The difference matters when someone commits a page while others are half edited: a check of the
+# disk would fail because of a page that is not even in this commit, and a hook that blocks valid
+# commits teaches people to skip it.
+#
+set -e
+
+tmp=$(mktemp -d)
+trap 'rm -rf "$tmp"' EXIT
+
+git checkout-index -a --prefix="$tmp/"
+
+if ! (cd "$tmp" && ./verify.sh >"$tmp/output.txt" 2>&1); then
+	grep '^ERROR' "$tmp/output.txt" || true
+	echo
+	echo "The commit has pages the OKF reader cannot open. The file would exist and the product would not."
+	echo "Fix them and try again, or commit with --no-verify if you know what you are doing."
+	exit 1
+fi

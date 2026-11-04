@@ -1,0 +1,53 @@
+{
+  "deal": {
+    "id": "66f1a2b3c4d5e6f708091a2b",
+    "kind": "sale",
+    "stage": "in_payment",
+    "version": 4,
+    "number": 1042,
+    "from_turn": 1,
+    "items": [
+      {
+        "sku": "NOV-1L",
+        "product": "Zelvora",
+        "presentation": "",
+        "quantity": 2,
+        "price": 250.5,
+        "subtotal": 501
+      },
+      {
+        "sku": null,
+        "product": "Trevalis 45 EW",
+        "presentation": "",
+        "quantity": 1,
+        "price": null,
+        "subtotal": null
+      }
+    ],
+    "total": 501,
+    "currency": "GTQ",
+    "payment": {
+      "link": {
+        "url": "https://pay.example/l/abc",
+        "active": true,
+        "expires_at": "2026-06-03T15:04:00Z"
+      },
+      "paid": false,
+      "paid_at": null
+    },
+    "opened_at": "2026-06-02T15:04:00Z",
+    "updated_at": "2026-06-02T16:04:00Z"
+  },
+  "history": [
+    {
+      "question": "hi",
+      "answer": "Hello!"
+    },
+    {
+      "question": "2 of Zelvora",
+      "answer": "Done, I'm sending you the link."
+    }
+  ],
+  "question": "can I pay now?",
+  "resumption": true
+}

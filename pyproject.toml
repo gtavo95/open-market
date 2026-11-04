@@ -1,0 +1,47 @@
+[project]
+name = "demo-api"
+version = "0.1.0"
+description = "The agronomy advisor on catalejo, served over HTTP and A2A"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.34",
+    "pydantic-settings>=2.7",
+    "httpx>=0.28.1",
+    "catalejo",
+    # Imported by `core_agent/__init__.py`: the package reads its `.env` on import. It came along with
+    # pydantic-settings; declared, it does not depend on that chain not changing.
+    "python-dotenv>=1.2.3",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "pytest-asyncio>=0.24",
+    "mypy>=1.13",
+    "httpx2>=2.12.0",
+]
+
+# It is not a library: nothing imports it. The code is in src/ and uvicorn runs it
+# with `--app-dir src`; pytest and mypy look for it there.
+[tool.uv]
+package = false
+
+# catalejo travels as a wheel in vendor/, without PyPI. Rebuilding the wheel means
+# rewriting this path and refreshing the hash in uv.lock.
+[tool.uv.sources]
+catalejo = { path = "vendor/catalejo-0.1.0-py3-none-any.whl" }
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["tests"]
+# `src/` is the app code; `.` for `evals/` and for `tests/`, which is a package:
+# `tests/host/` and `tests/core_agent/` have files with the same name, and the doubles are `tests.doubles`.
+pythonpath = [".", "src"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src", "cli.py", "evals", "tests"]
+mypy_path = ["src"]
+strict = true
