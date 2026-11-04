@@ -145,7 +145,9 @@ The WhatsApp channel and the chatroom come from an existing platform, outside th
 
 The platform receives the customer's messages and calls `POST /consultas` once per customer message. `src/wire` translates between the platform's contract and the advisor's own types. The platform delivers the replies and executes the effects the advisor proposes.
 
-Photo and voice input run through `/chat`, on the public page. `/consultas` handles the text of the turn.
+The platform also handles payment links and SAP Business One order drafts.
+
+Photo and voice work on both channels, by different paths. On the public page, Muse Wonder reads them through `/chat`. On WhatsApp, the platform's own Gemini-based media service transcribes voice notes and describes photos, and the agent receives the result as text. The multimodal results below were measured on `/chat`, not on WhatsApp.
 
 ---
 
@@ -211,6 +213,8 @@ Measurements were collected on November 3, 2026.
 | Muse Spark 1.3 Contributor, low | 9/18 | 17/18 | 3/9 | 44 |
 | Muse Spark 1.3 Contributor, medium | 8/18 | 18/18 | 3/9 | 112 |
 
+![Benchmark of four Muse configurations, with muse-wonder-1.0 at medium effort as the default](docs/benchmark.png)
+
 **Default configuration: `muse-wonder-1.0`, medium effort.**
 
 Correctness measures whether the answer cites the expected source. Criterion is a TypeSafe judge evaluating the answer against the scenario. Order right measures whether the resulting order is correct.
@@ -273,6 +277,10 @@ The agent can track:
 ### Human-in-the-loop
 
 Human-in-the-loop is part of the existing platform. When a case needs a person, the advisor proposes a handoff and the bot pauses. A person takes the conversation in the chatroom, with the form and the cart already filled in, and can hand it back to the agent.
+
+![The platform's chatroom showing a conversation handed off to a human after a completed sale](docs/chatroom-handoff.png)
+
+*The chatroom belongs to the existing platform and was not built for the hackathon.*
 
 The advisor does not execute external actions directly.
 
@@ -425,13 +433,13 @@ Open Market is a working prototype, not a complete commercial deployment.
 Current limitations and opportunities include:
 
 - Improving image and voice perception reliability.
-- Bringing photo and voice input to the WhatsApp channel.
+- Moving WhatsApp photo and voice input onto Muse Wonder, and measuring it with this agent.
 - Testing with real farmers and real-world agricultural photographs.
 - Reducing multimodal response latency.
 - Improving multi-product cart consistency.
-- Finishing the close of a WhatsApp sale: registering the order and telling the customer what the platform closed.
-- Connecting the advisor to real distributor catalogs and inventory systems.
-- Connecting proposed effects to payment systems and CRM platforms.
+- Finishing this agent's close of a WhatsApp sale: the platform can register orders, but the order draft failed validation in the demo, and the agent does not yet tell the customer what the platform closed.
+- Connecting this demo to a real distributor catalog and live inventory.
+- Connecting proposed effects to CRM platforms.
 - Expanding evaluation coverage across more agricultural scenarios.
 
 The current catalog belongs to Agroinsumos Ceiba, a fictional Guatemalan distributor created for this demonstration.
