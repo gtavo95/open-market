@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    app_name: str = "demo-api"
+    app_name: str = "open-market"
     env: str = "dev"
     debug: bool = False
 
@@ -33,6 +33,7 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     anthropic_workspace_id: str = ""
     model: str = ""
+    demo_turns: int = 400
     thinking: str = ""
     retries: int = 4
     paid_retries: int = 1

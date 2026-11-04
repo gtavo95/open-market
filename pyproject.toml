@@ -1,5 +1,5 @@
 [project]
-name = "demo-api"
+name = "open-market"
 version = "0.1.0"
 description = "The agronomy advisor on catalejo, served over HTTP and A2A"
 requires-python = ">=3.12"

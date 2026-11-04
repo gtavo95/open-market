@@ -11,7 +11,7 @@ What it costs: no call to the model, and none to the judge the sale has not
 already paid for on the same turn.
 
 `host_sim` is the host's rule written once, for the terminal and the evals,
-which have nowhere to send anything from. demo-api replaces it with the real
+which have nowhere to send anything from. The host replaces it with the real
 send.
 """
 
@@ -52,7 +52,7 @@ account does not go out to someone still comparing prices. None carries
 customer arguments: the datasheet is resolved with what the writer cited (`resolvers`), and the
 host knows the account.
 
-The host's rule, for `cli.py`, `evals/suite.py` and demo-api: a proposed one with a
+The host's rule, for `cli.py`, `evals/suite.py` and the host: a proposed one with a
 resolver and no args (the writer cited `none` or ran out of steps) is
 `reject` with a note, not `done`; one with no resolver is `done` directly. It is in
 `host_sim`, which is what the terminal runs for the host.
@@ -184,7 +184,7 @@ def host_sim(out: Effects) -> tuple[EffectOp, ...]:
     """What a host does with a turn's proposed effects, without sending anything: the rule of `EFFECT_RULES`.
 
     It is for the terminal and the evals, which have no WhatsApp: it returns the `done` or
-    the `reject` demo-api would seed on the next turn.
+    the `reject` the host would seed on the next turn.
     """
     return tuple(
         EffectOp("reject", e.id, note="no args to send")

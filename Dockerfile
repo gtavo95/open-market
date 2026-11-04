@@ -2,7 +2,7 @@
 # bundle in okf/ (`core_agent/` is code of this repo). There is
 # nothing to mount, which is what Cloud Run needs.
 #
-#   docker run --rm -p 8000:8000 -e OPENAI_API_KEY=$OPENAI_API_KEY demo-api
+#   docker run --rm -p 8000:8000 -e MUSE_API_KEY=$MUSE_API_KEY open-market
 FROM python:3.12-slim
 COPY --from=ghcr.io/astral-sh/uv:0.9.28 /uv /uvx /bin/
 

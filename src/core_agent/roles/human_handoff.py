@@ -88,7 +88,7 @@ ORIGIN: tuple[str, str] = ("origin", "requested_by_agent")
 The CRM's other two, payment rejection and document failure, are not escalations
 the advisor proposes: they are what the host returns when it `reject`s an effect
 it did propose, and they travel in the note of that `reject`. It goes as an argument and not
-hard-coded in the host so demo-api stores what the turn said and not what it
+hard-coded in the host so the host stores what the turn said and not what it
 assumes.
 """
 
