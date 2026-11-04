@@ -18,6 +18,10 @@ Built with Meta's Model API and Muse Wonder, Open Market demonstrates how fronti
 
 **GitHub:** [gtavo95/open-market](https://github.com/gtavo95/open-market)
 
+![A sale on WhatsApp: the agent identifies thrips and gives the datasheet dose, quotes the order with shipping, and confirms it before handing off to a person](docs/whatsapp-sale.png)
+
+*A sale on WhatsApp, from the demo video: the diagnosis, the quote with shipping, and the confirmed order. Fictional distributor, customer, and data.*
+
 ---
 
 ## What is new and what already existed
