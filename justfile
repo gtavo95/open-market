@@ -1,7 +1,6 @@
-# What has to be green before a PR. `test` and `typecheck` whole do not go in yet:
-# on main two tests in `tests/evals/` fail (the bundle does not bring `evals/cases.tsv` or
-# `evals/flows.tsv`) and mypy gives 31 errors. They go into `ci` when they are green.
-ci: secret-scan okf
+# What has to be green before a PR. `typecheck` whole does not go in yet: mypy still gives
+# errors on main. It goes into `ci` when it is green.
+ci: secret-scan okf test
 
 # The rules first, with their failing cases; then the repo.
 secret-scan:

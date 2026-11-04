@@ -23,6 +23,7 @@ from catalejo.rlm import Transcript
 from evals.ab import Cut, sample
 from evals.suite import ASK_BACK, Case, Run, flows, is_hit, percentile, repeats, summarize, tsv_of
 
+LIVE_CASES = all((catalog.BUNDLE / "evals" / tsv).exists() for tsv in ("cases.tsv", "flows.tsv"))
 CASE = Case("x", "?", ("products/a.md",), "# Datasheet", "cites a")
 
 
@@ -132,15 +133,12 @@ class TestFlows:
         with pytest.raises(SystemExit):
             flows("f.tsv")
 
-    @pytest.mark.skipif(
-        not (catalog.BUNDLE / "evals").is_dir(),
-        reason="`okf/` does not bring evals/: run with DEMO_BUNDLE pointing at okf/",
-    )
+    @pytest.mark.skipif(not LIVE_CASES, reason="`okf/` does not bring cases.tsv or flows.tsv: run with DEMO_BUNDLE pointing at the live bundle")
     def test_the_bundle_ones_load(self) -> None:
         assert [f.id for f in flows("flows.tsv")]
         assert [c.id for c in suite.cases("cases.tsv")]
 
-    @pytest.mark.skipif(not (catalog.BUNDLE / "evals").is_dir(), reason="`okf/` does not bring evals/")
+    @pytest.mark.skipif(not LIVE_CASES, reason="`okf/` does not bring cases.tsv or flows.tsv")
     def test_every_bundle_case_has_a_topic(self) -> None:
         every = suite.units()
 

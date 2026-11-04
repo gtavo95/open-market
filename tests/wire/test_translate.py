@@ -210,14 +210,14 @@ class TestMapsAndTheJudgment:
 
         assert to_wire("AnswerOut", english) == spanish
 
-    def test_the_judgment(self) -> None:
+    def test_the_judgment(self, caplog: pytest.LogCaptureFixture) -> None:
         english = {
             "state": {"pest": "thrips", "crop": "tomato", "cart": [{"product": "Reapvane"}]},
             "p": {"has_search_terms": 0.95, "complete_invoice": 0.1, "another_question": 0.5},
             "labels": {"payment_method": "transfer", "payment_request": "account", "escalation_reason": "special_order", "case": "no_data", "free": "kept"},
             "order": {"items": [{"said": {"product": "x", "presentation": "y"}, "product": "P", "state": "discontinued"}], "total": None, "currency": "GTQ", "chargeable": False, "restarted": False},
-            "already_said": ["pest"],
-            "asks_again": ["quantity"],
+            "already_said": ["asked for the NIT; the customer answered 1234567-8"],
+            "asks_again": ["can you send me the accounts again?"],
             "unanswered": ["method"],
             "error": "",
         }
@@ -227,7 +227,9 @@ class TestMapsAndTheJudgment:
         assert wire["p"] == {"hay_con_que_buscar": 0.95, "factura_completa": 0.1, "another_question": 0.5}
         assert wire["etiquetas"] == {"medio_de_pago": "transferencia", "pedido_de_pago": "cuenta", "motivo_de_escalada": "pedido_especial", "caso": "sin_dato", "free": "kept"}
         assert wire["pedido"]["items"][0]["estado"] == "descontinuado"
-        assert wire["ya_dicho"] == ["plaga"] and wire["pide_de_nuevo"] == ["cantidad"] and wire["sin_contestar"] == ["medio"]
+        assert wire["sin_contestar"] == ["medio"]
+        assert wire["ya_dicho"] == english["already_said"] and wire["pide_de_nuevo"] == english["asks_again"], "the judge's prose crosses as it is"
+        assert "1234567-8" not in caplog.text, "prose is not an unmapped value: a warning would put the customer's data in the logs"
         assert wire["estado"] == english["state"], "the model's own notes cross as they are"
 
     def test_what_the_model_wrote_in_the_judgment_state_is_lossless(self) -> None:
