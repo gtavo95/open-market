@@ -69,8 +69,8 @@ source; "criterion" is a TypeSafe judge reading the answer against the case.
 | `muse-spark-1.3-contributor`, medium | 8/18 | 18/18 | 3/9 | 112 |
 
 This is a small sample: 3 runs do not separate low from medium on Wonder, and the default moves
-between runs: after the last prompt changes it read 15/18 and then 17/18, with the criterion at 18/18
-and orders at 6/9 both times. A known gap remains on
+between runs: after the last prompt changes it read 15/18, 17/18 and 16/18, with the criterion at 18/18
+and orders at 6/9 all three times. A known gap remains on
 the turn that adds a second product: the internal cart reads 6 L of the first product for one turn,
 and it is right again on the next turn.
 

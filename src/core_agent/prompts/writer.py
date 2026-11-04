@@ -93,7 +93,7 @@ CASE_LINES: dict[str, str] = {
     ),
     "not_covered": (
         "No datasheet covers the pest or what they are looking for: answer with this sentence and then the SOURCE line, with "
-        "what they asked for in place of X: \"The catalog does not cover X; I will escalate your inquiry to an "
+        "what they asked for in place of X: \"We do not have a product for X; I will escalate your inquiry to an "
         "agronomist so they can resolve your specialized question.\" Do not offer another product in its place."
     ),
     "discontinued": (
