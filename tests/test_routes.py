@@ -186,7 +186,7 @@ class TestHealth:
         assert customer.get("/health").json()["advisor"] is True
 
     def test_the_root_points_to_the_docs(self, customer: TestClient) -> None:
-        assert customer.get("/").json()["docs"] == "/docs"
+        assert "<title>" in customer.get("/").text
 
 
 class TestQueries:

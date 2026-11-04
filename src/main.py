@@ -4,7 +4,7 @@ from fastapi import FastAPI
 
 from config import get_settings
 from lifespan.agent import lifespan
-from routes import a2a_router, compaction_router, queries_router, health_router
+from routes import a2a_router, chat_router, compaction_router, queries_router, health_router
 
 settings = get_settings()
 
@@ -14,8 +14,4 @@ app.include_router(health_router)
 app.include_router(queries_router)
 app.include_router(a2a_router)
 app.include_router(compaction_router)
-
-
-@app.get("/")
-def root() -> dict[str, str]:
-    return {"app": settings.app_name, "docs": "/docs"}
+app.include_router(chat_router)
