@@ -20,6 +20,25 @@ Built with Meta's Model API and Muse Wonder, Open Market demonstrates how fronti
 
 ---
 
+## What is new and what already existed
+
+Open Market is a startup entry: it builds on an existing product. **The agent in this repository is the hackathon work.** The messaging platform it runs on was not built for the hackathon, and we do not present it as a contribution.
+
+| In the video | Status |
+|---|---|
+| The advisor's answers, the catalog search, the dose, and the priced order ("The sale, on WhatsApp") | **Hackathon work:** the agent, moved to English and to Muse Wonder on the Meta Model API, based on an earlier agent by the same developer |
+| The connection between the agent and the platform (`/consultas`, `src/wire`) | **Built during the hackathon** |
+| The test user and the test integration with Meta | **Created during the hackathon** for this demo |
+| The model comparison ("Why Muse Wonder") | **Built during the hackathon** |
+| The WhatsApp channel itself | **Already existed**, shown only as the place where the agent runs |
+| The chatroom, the handoff, and a person stepping in ("Human in the loop", and the closing line "A person can step in at any moment") | **Already existed**, not a hackathon contribution; shown only to explain where the agent hands off |
+
+Photo and voice input with Muse Wonder and the public chat page were also built during the hackathon. They can be tried on the live demo.
+
+The full list is under [What was built during the hackathon](#what-was-built-during-the-hackathon).
+
+---
+
 ## The vision: Democratizing access to AI
 
 Open Market is part of a broader vision: making advanced artificial intelligence accessible to small and medium-sized businesses that cannot afford to build and maintain specialized AI teams.
