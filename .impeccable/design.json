@@ -1012,7 +1012,7 @@
       },
       {
         "name": "The Folded Proof Rule",
-        "body": "The trace is open while the turn runs and folds when it ends, staying folded. The toggle carries the count (\"Show trace · 9 steps\"), so the proof is one click away and the conversation stays readable.",
+        "body": "The trace is open while the turn runs and folds when it ends, unless the turn ended with no answer: then it stays open. A step that failed inside an answered turn stays folded, because searches recover from those and an open trace would push the answer out of view. The toggle carries the count (\"Show trace · 9 steps\"), so the proof is one click away and the conversation stays readable.",
         "section": "components"
       },
       {

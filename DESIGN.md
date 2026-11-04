@@ -241,7 +241,7 @@ Four differences from platform are deliberate:
 
 - The card floats over the conversation and moves nothing; platform moves the thread (see The Shared Edges Rule).
 - The card has no outside-click close on desktop (see The Three Ways Out Rule).
-- The trace stays folded after a turn, with its step count in the toggle (see The Folded Proof Rule).
+- The trace folds after an answered turn, with its step count in the toggle (see The Folded Proof Rule).
 - A step the stream never closed shows as muted "cut off", not as failed (see The Honest Cut Rule).
 
 ## Colors
@@ -406,7 +406,7 @@ The signature component, and the page's proof.
 - **Finishing:** the spinner gives way to a leaf check that draws itself in 260ms, then fades after 700ms. A replayed turn shows no checks.
 - **Failure:** a failed step shows "failed" in `destructive-text` and pins itself and its parents open inside the trace.
 
-**The Folded Proof Rule.** The trace is open while the turn runs and folds when it ends, staying folded. The toggle carries the count ("Show trace · 9 steps"), so the proof is one click away and the conversation stays readable.
+**The Folded Proof Rule.** The trace is open while the turn runs and folds when it ends, unless the turn ended with no answer: then it stays open. A step that failed inside an answered turn stays folded, because searches recover from those and an open trace would push the answer out of view. The toggle carries the count ("Show trace · 9 steps"), so the proof is one click away and the conversation stays readable.
 
 **The Honest Cut Rule.** A step the stream never closed is muted "cut off", in Bark at medium weight, never red and never "failed". The page stopped seeing it, which does not mean it failed.
 

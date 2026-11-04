@@ -99,6 +99,7 @@ svg { display: block; }
 /* Greeting */
 .hello { display: grid; gap: .875rem; padding-bottom: .25rem; }
 .hello p { margin: 0; max-width: 65ch; font-size: 1.0625rem; line-height: 1.6; }
+.hello .proof { color: var(--muted-foreground); font-size: .875rem; }
 .starters { display: flex; flex-wrap: wrap; gap: .5rem; }
 .starter {
   min-height: 2.5rem; padding: .5rem .875rem; border: 1px solid var(--border); border-radius: 1.25rem;
@@ -777,7 +778,7 @@ function renderAnswer(turn, trace) {
   return agent;
 }
 
-function addDrawer(meta, host, trace) {
+function addDrawer(meta, host, trace, open = false) {
   const steps = trace.tally();
   const toggle = el("button", "tool", `Show trace · ${steps}`);
   toggle.type = "button";
@@ -786,12 +787,13 @@ function addDrawer(meta, host, trace) {
   const clip = el("div");
   clip.append(trace.root);
   drawer.append(clip);
-  toggle.onclick = () => {
-    const open = drawer.dataset.open !== "true";
+  const show = open => {
     drawer.dataset.open = String(open);
     toggle.textContent = `${open ? "Hide" : "Show"} trace · ${steps}`;
     toggle.setAttribute("aria-expanded", String(open));
   };
+  toggle.onclick = () => show(drawer.dataset.open !== "true");
+  show(open);
   meta.append(toggle);
   host.append(drawer);
 }
@@ -814,7 +816,8 @@ function renderFailure(turn, trace, payload) {
     meta.append(retry);
   }
   agent.append(meta);
-  if (trace.nodes.size) addDrawer(meta, agent, trace);
+  /* A turn with no answer has only its trace to show: it does not wait behind a click. */
+  if (trace.nodes.size) addDrawer(meta, agent, trace, true);
   return agent;
 }
 
@@ -831,6 +834,7 @@ function renderHello() {
   const hello = el("div", "hello");
   hello.id = "hello";
   hello.append(el("p", "", GREETING));
+  hello.append(el("p", "proof", "Every recommendation comes from a datasheet the advisor opened, and the trace of each turn shows it."));
   const list = el("div", "starters");
   STARTERS.forEach(s => {
     const b = el("button", "starter", s);
